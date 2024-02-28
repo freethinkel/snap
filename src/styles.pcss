@@ -1,0 +1,91 @@
+:root {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.2rem;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    "Open Sans",
+    "Helvetica Neue",
+    sans-serif;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  cursor: default;
+  background: none;
+  color: var(--color-text);
+
+  --border-width: 2px;
+  --border-radius: 8px;
+  --transition: 0.1s ease-in-out;
+
+  --color-accent: rgb(21, 193, 216);
+  --color-panel: rgba(20, 20, 20, 1);
+
+  --color-background: #f5f5f5;
+
+  --color-text: rgba(0, 0, 0, 1);
+  --color-red: #f47171;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --color-panel: rgba(235, 235, 235, 1);
+
+    --color-background: #101010;
+    --color-text: rgba(255, 255, 255, 1);
+    --color-red: #e7514d;
+  }
+}
+
+html,
+body {
+  margin: 0;
+  overflow: hidden;
+  user-select: none;
+}
+
+html,
+body,
+#app {
+  height: 100vh;
+  min-height: 100vh;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.visually-hidden {
+  position: absolute;
+  clip-path: inset(100%);
+  margin: -1px;
+  border: 0;
+  padding: 0;
+  width: 1px;
+  height: 1px;
+  white-space: nowrap;
+  clip: rect(0 0 0 0);
+  overflow: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+}
