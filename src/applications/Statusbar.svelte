@@ -2,6 +2,14 @@
   import { Button } from "@/components/button";
   import * as statusbarStore from "@/stores/statusbar";
   import { StatusbarView, StatusbarFooter } from "@/views";
+  import { onMount } from "svelte";
+
+  onMount(() => {
+    document.body.style.height = "auto";
+    setTimeout(() => {
+      document.body.style.height = "100vh";
+    });
+  });
 </script>
 
 <div class="wrapper statusbar__frame">

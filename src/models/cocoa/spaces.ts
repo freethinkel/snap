@@ -63,8 +63,6 @@ export class Spaces {
       index: i,
     }));
 
-    console.log(data);
-
     return {
       monitors,
       allSpaces,

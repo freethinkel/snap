@@ -71,7 +71,6 @@ const arrangeWindowsOnCurrentScreenFx = createEffect(
       );
 
       const framesForWindows = frames[windows.length - 1];
-      console.log(framesForWindows);
       if (!framesForWindows?.length) {
         return;
       }

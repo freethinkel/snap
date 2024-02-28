@@ -58,7 +58,7 @@
 
     &.active {
       background-color: var(--color-accent);
-      color: var(--color-text);
+      color: #fff;
     }
   }
 </style>

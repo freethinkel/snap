@@ -40,4 +40,6 @@ sample({
   target: changeCaffeinateFx,
 });
 
+changeCaffeinateFx($enabled.getState());
+
 export { $enabled, changeCaffeinateFx, onChangeCaffeinateModeClicked };

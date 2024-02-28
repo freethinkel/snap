@@ -48,8 +48,6 @@ sample({
       frame = windowManagerStore.placeholderToScreen(screen!)(placeholder);
     }
 
-    console.log(window?.frame, frame, window?.frame.hash === frame.hash);
-
     return frame;
   },
   target: setWindowFrameFx,

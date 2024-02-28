@@ -44,10 +44,6 @@
     event.preventDefault();
   };
 
-  $: {
-    console.log($pressedKeys);
-  }
-
   const onKeyUp = (event: KeyboardEvent) => {
     pressedKeys.update((codes) => {
       codes.delete(event.key);

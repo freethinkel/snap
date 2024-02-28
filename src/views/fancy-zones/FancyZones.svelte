@@ -61,15 +61,23 @@
     left: 50%;
     gap: 5px;
     transform: translateX(-50%) translateY(-300%);
-    opacity: 0.9;
+    opacity: 1 !important;
     backdrop-filter: blur(10px);
     animation: 10s fixBlur infinite alternate;
     transition: 0.2s ease-out transform;
     box-shadow:
-      0 10px 10px 0 rgba(0, 0, 0, 0.12),
-      0 4px 4px rgba(0, 0, 0, 0.12);
-    border-radius: var(--border-radius);
-    background-color: var(--color-background);
+      rgba(0, 0, 0, 0.25) 0px 54px 55px,
+      rgba(0, 0, 0, 0.12) 0px -12px 30px,
+      rgba(0, 0, 0, 0.12) 0px 4px 6px,
+      rgba(0, 0, 0, 0.17) 0px 12px 13px,
+      rgba(0, 0, 0, 0.09) 0px -3px 5px,
+      inset 0 0 0 1px color-mix(in srgb, transparent, var(--color-panel) 10%);
+    border-radius: calc(var(--border-radius) * 1.5);
+    background-color: color-mix(
+      in srgb,
+      transparent,
+      var(--color-background) 70%
+    );
     padding: 8px;
 
     &.show {
