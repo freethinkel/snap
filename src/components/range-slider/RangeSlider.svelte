@@ -105,7 +105,7 @@
       0 0 0 1px rgba(0, 0, 0, 0.12);
     border: 1px solid var(--color-border);
     border-radius: var(--size);
-    background-color: var(--color-panel);
+    background-color: #fff;
     padding: 0;
     width: var(--size);
     min-width: var(--size);
