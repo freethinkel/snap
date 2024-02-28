@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
-  "productName": "Spaceframe",
+  "productName": "Snap",
   "version": "1.0.0",
-  "identifier": "dev.freethinkel.spaceframe",
+  "identifier": "dev.freethinkel.snap",
   "build": {
     "beforeDevCommand": "pnpm dev",
     "devUrl": "http://localhost:1420",
@@ -18,7 +18,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "spaceframe",
+        "title": "snap",
         "width": 800,
         "height": 600,
         "titleBarStyle": "Overlay",

@@ -20,7 +20,7 @@ pub fn patch_overlay_window(window: WebviewWindow) {
         #[cfg(not(debug_assertions))]
         {
             ns_window.setIgnoresMouseEvents_(YES);
-            ns_window.setLevel_(50);
+            ns_window.setLevel_(20);
         }
     }
 }
