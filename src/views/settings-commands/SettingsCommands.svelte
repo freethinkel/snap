@@ -2,6 +2,7 @@
 
 <style>
   h3 {
+    opacity: 0.7;
     margin: auto;
   }
 </style>

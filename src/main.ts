@@ -25,3 +25,11 @@ if (handler) {
 themeStore.$accentColor.subscribe((color) => {
   document.body.attributeStyleMap.set("--color-accent", color);
 });
+
+document.body.classList.add(`env__${process.env.NODE_ENV}`);
+
+if (process.env.NODE_ENV === "production") {
+  document.addEventListener("contextmenu", (event) => {
+    event.preventDefault();
+  });
+}
