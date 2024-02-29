@@ -3499,7 +3499,8 @@ dependencies = [
 
 [[package]]
 name = "tauri-plugin-nspopover"
-version = "1.1.0"
+version = "2.1.0"
+source = "git+https://github.com/freethinkel/tauri-nspopover-plugin.git?branch=tauri-beta/v2#eabdeb0d2bb7851fc015b116f6a7b10e88127fc4"
 dependencies = [
  "cocoa",
  "icrate",
