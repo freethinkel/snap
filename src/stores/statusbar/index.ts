@@ -8,6 +8,7 @@ import {
   startWindowManagerListenFx,
   stopWindowManagerListenFx,
 } from "../window-manager";
+import { exit } from "@tauri-apps/plugin-process";
 
 const isOverlayWindow = getCurrent().label === "main";
 
@@ -47,7 +48,7 @@ const openSettingsWindowFx = createEffect(async () => {
 const exitAppFx = createEffect(async () => {
   await caffeinateStore.changeCaffeinateFx(false);
   // PerformanceMeasure
-  // process.exit(0);
+  exit(0);
 });
 
 sample({

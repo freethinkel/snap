@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "productName": "Snap",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "identifier": "dev.freethinkel.snap",
   "build": {
     "beforeDevCommand": "pnpm dev",
@@ -39,7 +39,17 @@
       "csp": null
     }
   },
-  "plugins": {},
+  "plugins": {
+    "updater": {
+      "active": true,
+      "endpoints": [
+        "https://trysnap.app/releases/update.json",
+        "http://localhost:4321/releases/update.json"
+      ],
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDEyRDQ1Njc0OTc2NUFGMzIKUldReXIyV1hkRmJVRWxwajcrdXE3YXovS0pRbFV1OU00YjVWUFBJZTduMFZidVFXOVV1UGlBTHoK"
+    }
+  },
   "bundle": {
     "active": true,
     "targets": "all",

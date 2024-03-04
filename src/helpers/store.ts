@@ -56,3 +56,17 @@ export const createSharedStore = <T>(
 
   return store;
 };
+
+export const createStoreFromPromise = <T>(promise: Promise<T>) => {
+  const setValue = createEvent<T | null>();
+  const $store = createStore<T | null>(null);
+
+  sample({
+    clock: setValue,
+    target: $store,
+  });
+
+  promise.then((value) => setValue(value));
+
+  return $store;
+};

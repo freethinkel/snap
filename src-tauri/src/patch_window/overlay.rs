@@ -8,8 +8,11 @@ use objc::{msg_send, sel, sel_impl};
 use tauri::WebviewWindow;
 
 pub fn patch_overlay_window(window: WebviewWindow) {
+    let _ = window.set_shadow(false);
+
     unsafe {
         let ns_window = window.ns_window().unwrap() as id;
+        ns_window.invalidateShadow();
 
         let () = msg_send![ns_window, invalidateShadow];
         ns_window.setHasShadow_(NO);

@@ -8,7 +8,7 @@
     document.body.style.height = "auto";
     setTimeout(() => {
       document.body.style.height = "100vh";
-    });
+    }, 500);
   });
 </script>
 
