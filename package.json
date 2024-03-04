@@ -8,8 +8,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
-    "tauri": "TAURI_SIGNING_PRIVATE_KEY=$(cat ~/.tauri/snap_app.key) eval $(cat .env) tauri",
-    "create:update": "pnpm tauri build --target aarch64-apple-darwin && pnpm tauri build --target x86_64-apple-darwin && node update.js"
+    "tauri": "tauri",
+    "tauri:local": "TAURI_SIGNING_PRIVATE_KEY=$(cat ~/.tauri/snap_app.key) eval $(cat .env) tauri",
+    "create:update": "pnpm tauri:local build --target aarch64-apple-darwin && pnpm tauri:local build --target x86_64-apple-darwin && node update.js"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.0.0-beta.0",
