@@ -19,7 +19,7 @@
   const checkUpdate = async () => {
     const update = await check();
     if (update?.available && process.env.NODE_ENV === "production") {
-      update.downloadAndInstall();
+      await update.downloadAndInstall();
 
       await relaunch();
     }
