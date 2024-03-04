@@ -1,7 +1,7 @@
 import * as fs from "fs";
 
 const FOLDER = "update";
-const UPDATE_URL = "http://localhost:4321/releases/";
+const UPDATE_URL = "https://trysnap.app/releases/";
 
 const main = () => {
   const packageJson = JSON.parse(fs.readFileSync("./package.json"));
@@ -41,7 +41,7 @@ const main = () => {
         signature: String(
           fs.readFileSync(`./${FOLDER}/app-aarch64.app.tar.gz.sig`),
         ),
-        url: UPDATE_URL + "release/app-aarch64.app.tar.gz",
+        url: UPDATE_URL + "app-aarch64.app.tar.gz",
       },
     },
   };
