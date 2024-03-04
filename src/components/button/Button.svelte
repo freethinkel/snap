@@ -35,6 +35,7 @@
   }
   .kind {
     &__text {
+      font-weight: 600;
       &:hover {
         opacity: 0.8;
       }

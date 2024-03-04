@@ -1,7 +1,5 @@
-import { createEffect, createEvent, createStore, sample } from "effector";
-import { type Space, Spaces, type SpacesInfo } from "@/models/cocoa/spaces";
+import { createEffect, createEvent, sample } from "effector";
 import { CGWindow } from "@/models/cocoa/nswindow";
-import { AccessibilityElement } from "@/models/cocoa/accessibility-element";
 import { invoke } from "@tauri-apps/api/core";
 import { Frame, Position, Size } from "@/models/geometry/frame";
 import type { NSScreen } from "@/models/cocoa/nsscreen";
@@ -9,11 +7,7 @@ import * as windowManagerStore from "../window-manager";
 import * as settingsStore from "../settings";
 import { listen } from "@tauri-apps/api/event";
 
-const $spacesInfo = createStore(null);
-const $allWindows = createStore<CGWindow[]>([]);
-
 const loadAllData = createEvent();
-const arrangeWindowsOnScreen = createEvent<Space>();
 const arrangeWindowsOnCurrentScreen = createEvent();
 
 const loadAllDataFx = createEffect(async () => {
@@ -52,15 +46,22 @@ const arrangeWindowsOnCurrentScreenFx = createEffect(
           new Frame(new Size(0.5, 1), new Position(0.5, 0)),
         ],
         [
-          new Frame(new Size(1 / 6, 1), new Position(0, 0)),
-          new Frame(new Size(2 / 3, 1), new Position(1 / 6, 0)),
-          new Frame(new Size(1 / 6, 1), new Position(2 / 3 + 1 / 6, 0)),
+          new Frame(new Size(1 / 2, 1), new Position(0, 0)),
+          new Frame(new Size(1 / 2, 1 / 2), new Position(1 / 2, 0)),
+          new Frame(new Size(1 / 2, 1 / 2), new Position(1 / 2, 1 / 2)),
         ],
         [
           new Frame(new Size(0.5, 0.5), new Position(0, 0)),
           new Frame(new Size(0.5, 0.5), new Position(0.5, 0)),
           new Frame(new Size(0.5, 0.5), new Position(0, 0.5)),
           new Frame(new Size(0.5, 0.5), new Position(0.5, 0.5)),
+        ],
+        [
+          new Frame(new Size(0.5, 0.5), new Position(0, 0)),
+          new Frame(new Size(0.5, 0.5), new Position(0.5, 0)),
+          new Frame(new Size(0.5, 0.5), new Position(0, 0.5)),
+          new Frame(new Size(0.25, 0.5), new Position(0.5, 0.5)),
+          new Frame(new Size(0.25, 0.5), new Position(0.75, 0.5)),
         ],
       ].map((frames) =>
         frames.map((frame) =>

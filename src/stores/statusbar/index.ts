@@ -1,6 +1,5 @@
 import { createEffect, createEvent, sample } from "effector";
 
-import type { Position } from "@/models/geometry/frame";
 import { WebviewWindow, getCurrent } from "@tauri-apps/api/webviewWindow";
 import * as caffeinateStore from "./caffeinate";
 import { createSharedStore, wait } from "@/helpers";

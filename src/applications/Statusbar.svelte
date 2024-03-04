@@ -20,9 +20,9 @@
   <div class="footer">
     <StatusbarFooter>
       <div slot="left">
-        <Button on:click={() => statusbarStore.onSettingsClick()}
-          >Settings</Button
-        >
+        <Button on:click={() => statusbarStore.onSettingsClick()}>
+          Settings
+        </Button>
       </div>
       <div slot="right">
         <Button on:click={() => statusbarStore.exitAppFx()}>⌘ Q</Button>
