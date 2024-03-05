@@ -115,6 +115,18 @@ sample({
             window.frame.position.x + window.frame.size.width,
             window.frame.position.y + window.frame.size.height,
           ),
+        ) ||
+        screen?.frame.includesPoint(
+          new Position(
+            window.frame.position.x + window.frame.size.width,
+            window.frame.position.y,
+          ),
+        ) ||
+        screen?.frame.includesPoint(
+          new Position(
+            window.frame.position.x,
+            window.frame.position.y + window.frame.size.height,
+          ),
         )
       );
     }),

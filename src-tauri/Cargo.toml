@@ -1,6 +1,6 @@
 [package]
 name = "Snap"
-version = "1.1.0"
+version = "1.1.1"
 description = "Macos window manager app"
 authors = ["freethinkel"]
 edition = "2021"
