@@ -2,14 +2,7 @@
   import { Button } from "@/components/button";
   import * as statusbarStore from "@/stores/statusbar";
   import { StatusbarView, StatusbarFooter } from "@/views";
-  import { onMount } from "svelte";
-
-  onMount(() => {
-    document.body.style.height = "auto";
-    setTimeout(() => {
-      document.body.style.height = "100vh";
-    }, 500);
-  });
+  import { getCurrent } from "@tauri-apps/api/webview";
 </script>
 
 <div class="wrapper statusbar__frame">
@@ -36,10 +29,21 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    animation: fix 10s infinite;
     height: 100%;
     min-height: inherit;
   }
+
+  @keyframes fix {
+    0% {
+      transform: translateY(-0.1%);
+    }
+    100% {
+      transform: translateY(0%);
+    }
+  }
   .top {
+    flex: 1;
     padding: 8px;
     min-height: 112px;
   }

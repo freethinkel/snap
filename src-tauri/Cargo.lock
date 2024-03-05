@@ -4,7 +4,7 @@ version = 3
 
 [[package]]
 name = "Snap"
-version = "1.0.5"
+version = "1.0.6"
 dependencies = [
  "accessibility-sys",
  "active-win-pos-rs",
@@ -3646,8 +3646,8 @@ dependencies = [
 
 [[package]]
 name = "tauri-plugin-nspopover"
-version = "2.1.0"
-source = "git+https://github.com/freethinkel/tauri-nspopover-plugin.git?branch=tauri-beta/v2#eabdeb0d2bb7851fc015b116f6a7b10e88127fc4"
+version = "2.1.1"
+source = "git+https://github.com/freethinkel/tauri-nspopover-plugin.git?branch=tauri-beta/v2#75513b21084749ed84816840b51c1c76da7251e5"
 dependencies = [
  "cocoa",
  "icrate",

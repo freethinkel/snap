@@ -39,6 +39,8 @@
     "process:allow-restart",
     "app:allow-version",
     "app:allow-tauri-version",
+    "tray:allow-new",
+    "tray:default",
     {
       "identifier": "shell:allow-execute",
       "allow": [

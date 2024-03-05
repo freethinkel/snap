@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "productName": "Snap",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "identifier": "dev.freethinkel.snap",
   "build": {
     "beforeDevCommand": "pnpm dev",
@@ -11,6 +11,7 @@
   },
   "app": {
     "trayIcon": {
+      "id": "main",
       "iconPath": "icons/statusbar-icon.png",
       "iconAsTemplate": true
     },
