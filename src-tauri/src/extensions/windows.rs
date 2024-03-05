@@ -6,13 +6,8 @@ use core_foundation::{
     number::CFNumber,
     string::CFString,
 };
-use core_graphics::{
-    display::{
-        kCGNullWindowID, kCGWindowListExcludeDesktopElements, kCGWindowListOptionAll,
-        kCGWindowListOptionOnScreenOnly, CFDictionary, CGWindowListCopyWindowInfo,
-        CGWindowListOption,
-    },
-    window::kCGWindowListOptionOnScreenAboveWindow,
+use core_graphics::display::{
+    kCGNullWindowID, kCGWindowListExcludeDesktopElements, CFDictionary, CGWindowListCopyWindowInfo,
 };
 use objc::{msg_send, runtime::Class, sel, sel_impl};
 use serde::{Deserialize, Serialize};

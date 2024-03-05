@@ -64,11 +64,14 @@ const arrangeWindowsOnCurrentScreenFx = createEffect(
           new Frame(new Size(0.25, 0.5), new Position(0.75, 0.5)),
         ],
       ].map((frames) =>
-        frames.map((frame) =>
-          windowManagerStore.frameToPlaceholder({ gap, screen: screen! })(
-            frame,
-          ),
-        ),
+        frames.map((frame) => {
+          const placeholder = windowManagerStore.frameToPlaceholder({
+            gap,
+            screen: screen!,
+          })(frame);
+
+          return windowManagerStore.placeholderToScreen(screen!)(placeholder!);
+        }),
       );
 
       const framesForWindows = frames[windows.length - 1];
@@ -100,7 +103,24 @@ sample({
     screen: windowManagerStore.$currentCGScreen,
     gap: settingsStore.$windowGap,
   },
-  fn: ({ screen, gap }, data) => ({ ...data, screen: screen!, gap }),
+  fn: ({ screen, gap }, data) => ({
+    ...data,
+    windows: data.windows.filter((window) => {
+      console.log(screen?.frame, window.frame);
+
+      return (
+        screen?.frame.includesPoint(window.frame.position) ||
+        screen?.frame.includesPoint(
+          new Position(
+            window.frame.position.x + window.frame.size.width,
+            window.frame.position.y + window.frame.size.height,
+          ),
+        )
+      );
+    }),
+    screen: screen!,
+    gap,
+  }),
   target: arrangeWindowsOnCurrentScreenFx,
 });
 

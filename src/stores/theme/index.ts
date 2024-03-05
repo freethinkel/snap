@@ -1,7 +1,8 @@
+import { createSharedStore } from "@/helpers";
 import { NSColor } from "@/models/cocoa/nscolor";
-import { createEvent, createStore, sample } from "effector";
+import { createEvent, sample } from "effector";
 
-const $accentColor = createStore("rgb(21, 193, 216)");
+const $accentColor = createSharedStore("accent_color", "rgb(21, 193, 216)");
 
 const setAccentColor = createEvent<string>();
 

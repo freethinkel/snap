@@ -15,7 +15,7 @@ export const createSharedStore = <T>(
   initialValue: T,
   options?: Options<T>,
 ) => {
-  const key = `klin_terminal__${name}`;
+  const key = `snap__${name}`;
   const store = createStore(initialValue);
 
   const setValue = createEvent<T>();

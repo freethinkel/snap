@@ -2,7 +2,6 @@
   import { Button } from "@/components/button";
   import * as statusbarStore from "@/stores/statusbar";
   import { StatusbarView, StatusbarFooter } from "@/views";
-  import { getCurrent } from "@tauri-apps/api/webview";
 </script>
 
 <div class="wrapper statusbar__frame">
@@ -31,20 +30,28 @@
     justify-content: space-between;
     animation: fix 10s infinite;
     height: 100%;
-    min-height: inherit;
+    height: 100vh;
   }
 
   @keyframes fix {
     0% {
-      transform: translateY(-0.1%);
+      /* transform: translateY(-1%); */
+      opacity: 0.99;
     }
     100% {
-      transform: translateY(0%);
+      /* transform: translateY(0%); */
+      opacity: 1;
     }
   }
   .top {
     flex: 1;
     padding: 8px;
     min-height: 112px;
+  }
+  .footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
   }
 </style>
