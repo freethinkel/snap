@@ -17,7 +17,9 @@
         </Button>
       </div>
       <div slot="right">
-        <Button on:click={() => statusbarStore.exitAppFx()}>⌘ Q</Button>
+        <Button title="⌘ Q" on:click={() => statusbarStore.exitAppFx()}>
+          Exit
+        </Button>
       </div>
     </StatusbarFooter>
   </div>
@@ -35,11 +37,11 @@
 
   @keyframes fix {
     0% {
-      /* transform: translateY(-1%); */
+      transform: translateY(1%);
       opacity: 0.99;
     }
     100% {
-      /* transform: translateY(0%); */
+      transform: translateY(0%);
       opacity: 1;
     }
   }

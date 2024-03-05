@@ -3,6 +3,7 @@
 
   export let type: "button" | "submit" = "button";
   export let kind: "text" | "primary" | "outline" = "text";
+  export let title = "";
   export let disabled = false;
 
   const dispatch = createEventDispatcher();
@@ -11,6 +12,7 @@
 <button
   {type}
   {disabled}
+  {title}
   on:click={(event) => dispatch("click", event)}
   class="button kind__{kind}"
 >
