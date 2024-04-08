@@ -28,21 +28,6 @@
     </thead>
 
     <tbody>
-      {#each $mappings as mapping}
-        <tr>
-          <td>
-            <FramePosition frame={mapping.frame} />
-          </td>
-          <td>
-            <div class="shortcut">
-              <ShortcutRecorder
-                keys={mapping.shortcut}
-                on:record={({ detail }) => changeMapping(mapping, detail)}
-              />
-            </div>
-          </td>
-        </tr>
-      {/each}
       <tr>
         <td>
           <div class="arrange" title="Arrange windows">
@@ -61,6 +46,22 @@
           </div>
         </td>
       </tr>
+
+      {#each $mappings as mapping}
+        <tr>
+          <td>
+            <FramePosition frame={mapping.frame} />
+          </td>
+          <td>
+            <div class="shortcut">
+              <ShortcutRecorder
+                keys={mapping.shortcut}
+                on:record={({ detail }) => changeMapping(mapping, detail)}
+              />
+            </div>
+          </td>
+        </tr>
+      {/each}
     </tbody>
   </table>
 </div>

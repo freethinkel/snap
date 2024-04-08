@@ -24,16 +24,19 @@
         "height": 600,
         "titleBarStyle": "Overlay",
         "hiddenTitle": true,
+        "maximized": false,
+        "fullscreen": false,
         "transparent": true,
         "decorations": false
       },
       {
         "label": "statusbar",
-        "fullscreen": false,
         "resizable": true,
         "width": 250,
         "height": 150,
-        "transparent": true
+        "transparent": true,
+        "maximized": false,
+        "fullscreen": false
       }
     ],
     "security": {

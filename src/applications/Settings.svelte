@@ -1,7 +1,6 @@
 <script lang="ts">
   import { Titlebar } from "@/components/titlebar";
   import { SettingsTabs } from "@/views";
-  import { SettingsCommands } from "@/views/settings-commands";
   import { SettingsGeneral } from "@/views/settings-general";
   import { SettingsMapping } from "@/views/settings-mapping";
 
@@ -19,7 +18,6 @@
       tabs={[
         { value: "general", icon: "settings", label: "General" },
         { value: "mappings", icon: "keyboard", label: "Mappings" },
-        { value: "commands", icon: "file-script", label: "Commands" },
       ]}
     />
   </div>
@@ -28,8 +26,6 @@
     <SettingsGeneral />
   {:else if $activeTab === "mappings"}
     <SettingsMapping />
-  {:else if $activeTab === "commands"}
-    <SettingsCommands />
   {/if}
 </div>
 

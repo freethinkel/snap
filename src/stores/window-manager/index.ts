@@ -14,6 +14,9 @@ import {
 import { NSEvent, NSEventType } from "@/models/cocoa/nsevent";
 import { AccessibilityElement } from "@/models/cocoa/accessibility-element";
 import { throttle } from "@/helpers";
+import { getCurrent } from "@tauri-apps/api/webview";
+
+const isOverlayWindow = getCurrent().label === "main";
 
 type MouseEvent<T extends "down" | "up" | "dragged"> = {
   type: T;
@@ -192,11 +195,13 @@ sample({
   target: $draggingPosition,
 });
 
-$currentScreen.subscribe((screen) => {
-  if (screen) {
-    NSWindow.setFrame(screen.frame);
-  }
-});
+if (isOverlayWindow) {
+  $currentScreen.subscribe((screen) => {
+    if (screen) {
+      NSWindow.setFrame(screen.frame);
+    }
+  });
+}
 
 const placeholderToScreen =
   (screen: NSScreen) =>

@@ -16,6 +16,7 @@ const $windowManagerEnabled = createSharedStore(
   false,
 );
 
+// events
 const onSettingsClick = createEvent();
 const setWindowManagerEnabled = createEvent<boolean>();
 

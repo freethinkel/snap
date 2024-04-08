@@ -11,7 +11,7 @@ edition = "2021"
 tauri-build = { version = "2.0.0-beta", features = [] }
 
 [dependencies]
-tauri = { version = "2.0.0-beta", features = ["macos-private-api", "tray-icon", "icon-png"] }
+tauri = { version = "2.0.0-beta.13", features = ["macos-private-api", "tray-icon", "image-png"] }
 tauri-plugin-shell = "2.0.0-beta"
 serde_json = "1.0"
 # tauri-plugin-nspopover = { path = "../../tauri-plugin-nspopover" }

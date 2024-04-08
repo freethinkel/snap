@@ -9,7 +9,6 @@ mod commands;
 mod data;
 mod extensions;
 mod patch_window;
-mod playground;
 
 use tauri_plugin_global_shortcut;
 
@@ -37,8 +36,6 @@ fn main() {
             patch_overlay_window(overlay);
             statusbar.to_popover();
 
-            use playground::main;
-            main();
             Ok(())
         })
         .plugin(tauri_plugin_shell::init())

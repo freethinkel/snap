@@ -37,7 +37,8 @@ impl NSNotificationCenter {
                                                usingBlock:block]
         };
         self.observer = Some(observer);
-        return self;
+
+        self
     }
 
     pub fn stop(&self) {
