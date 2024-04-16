@@ -5,6 +5,7 @@
   import * as settingsStore from "@/stores/settings";
   import "@/stores/spaces";
   import "@/stores/mapping";
+  import "@/stores/statusbar";
   import { Snapping, FancyZones } from "@/views";
   import { check } from "@tauri-apps/plugin-updater";
   import { onMount } from "svelte";
