@@ -1,4 +1,4 @@
-import { createSharedStore } from "@/helpers";
+import { createSharedStore, wait } from "@/helpers";
 import { getCurrent } from "@tauri-apps/api/webview";
 import { Command } from "@tauri-apps/plugin-shell";
 import { createEffect, createEvent, sample } from "effector";
@@ -17,7 +17,9 @@ const changeCaffeinateFx = createEffect(async (state: boolean) => {
 
   const stop = async () => {
     const command = Command.create("killall", ["caffeinate"]);
-    await command.execute();
+    command.execute();
+
+    await wait(400);
   };
 
   if (state) {

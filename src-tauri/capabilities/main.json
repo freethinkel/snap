@@ -45,6 +45,7 @@
       "identifier": "shell:allow-execute",
       "allow": [
         {
+          "sidecar": false,
           "name": "killall",
           "cmd": "killall",
           "args": [
@@ -54,6 +55,7 @@
           ]
         },
         {
+          "sidecar": false,
           "name": "caffeinate",
           "cmd": "caffeinate",
           "args": [
