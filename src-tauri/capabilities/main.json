@@ -22,6 +22,7 @@
     "core:webview:allow-set-webview-focus",
     "core:webview:allow-create-webview",
     "core:webview:allow-create-webview-window",
+    "global-shortcut:default",
     "global-shortcut:allow-unregister",
     "global-shortcut:allow-unregister-all",
     "global-shortcut:allow-register",

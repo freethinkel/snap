@@ -12,8 +12,8 @@ dependencies:
     specifier: 2.0.0-rc.1
     version: 2.0.0-rc.1
   '@tauri-apps/plugin-global-shortcut':
-    specifier: 2.0.0-beta.1
-    version: 2.0.0-beta.1
+    specifier: github:tauri-apps/tauri-plugin-global-shortcut#v2
+    version: github.com/tauri-apps/tauri-plugin-global-shortcut/49de6d5b9af2f3698c6896e86096f31a5250181a
   '@tauri-apps/plugin-process':
     specifier: 2.0.0-beta.1
     version: 2.0.0-beta.1
@@ -610,12 +610,6 @@ packages:
     resolution: {integrity: sha512-5h801HJf6Z5CtUmJhwv+PBSn2nNAWqsuKmu0hABn/IpP2AElZev4XicMzrnYVevJeIhWgRA8HNpg3s8pbic1Rw==}
     dependencies:
       '@tauri-apps/api': 2.0.0-rc.4
-    dev: false
-
-  /@tauri-apps/plugin-global-shortcut@2.0.0-beta.1:
-    resolution: {integrity: sha512-RPPcG45L7coIb9yP/NTLSNC6leAFcbDsOv+AlyQYpvEwTAWfwzzi4YU0XaTGT2H56Ozd6L3KrT4RAxIKAHZ9Cg==}
-    dependencies:
-      '@tauri-apps/api': 2.0.0-beta.2
     dev: false
 
   /@tauri-apps/plugin-process@2.0.0-beta.1:
@@ -2029,3 +2023,11 @@ packages:
     resolution: {integrity: sha512-8aAvwVUSHpfEqTQ4w/KMlf3HcRdt50E5ODIQJBw1fQ5RL34xabzxtUlzTXVqc4rkZsPbvrXKWnABCD7kWSmocA==}
     engines: {node: '>= 14'}
     dev: true
+
+  github.com/tauri-apps/tauri-plugin-global-shortcut/49de6d5b9af2f3698c6896e86096f31a5250181a:
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-global-shortcut/tar.gz/49de6d5b9af2f3698c6896e86096f31a5250181a}
+    name: '@tauri-apps/plugin-global-shortcut'
+    version: 2.0.0-rc.1
+    dependencies:
+      '@tauri-apps/api': 2.0.0-rc.4
+    dev: false
