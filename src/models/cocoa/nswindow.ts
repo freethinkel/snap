@@ -16,6 +16,7 @@ export class CGWindow {
   id!: number;
   name!: string;
   pid!: number;
+  is_on_screen!: boolean;
 
   static async getAllWindows(): Promise<CGWindow[]> {
     return invoke("cgwindow_get_on_screen");

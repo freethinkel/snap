@@ -3,7 +3,7 @@ use std::sync::Mutex;
 use crate::extensions::{notification::NSNotificationCenter, nscolor::NSAColor};
 
 use cocoa::base::nil;
-use tauri::{command, AppHandle, Manager};
+use tauri::{command, AppHandle, Emitter};
 
 #[command]
 pub fn nscolor_get_accent() -> String {

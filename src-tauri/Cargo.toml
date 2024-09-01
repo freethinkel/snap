@@ -1,6 +1,6 @@
 [package]
 name = "Snap"
-version = "1.2.2"
+version = "1.3.0"
 description = "Macos window manager app"
 authors = ["freethinkel"]
 edition = "2021"
@@ -16,13 +16,13 @@ tauri = { version = "2.0.0-beta.13", features = [
     "tray-icon",
     "image-png",
 ] }
-tauri-plugin-shell = "2.0.0-beta"
+tauri-plugin-shell = "^2.0.0-rc.2"
 serde_json = "1.0"
+tauri-plugin-nspopover = { git = "https://github.com/freethinkel/tauri-nspopover-plugin.git", branch = "tauri-beta/v2", version = "3.3.0"}
 # tauri-plugin-nspopover = { path = "../../tauri-plugin-nspopover" }
-tauri-plugin-nspopover = { git = "https://github.com/freethinkel/tauri-nspopover-plugin.git", branch = "tauri-beta/v2" }
-tauri-plugin-global-shortcut = "2.0.0-beta"
-tauri-plugin-updater = "2.0.0-beta"
-tauri-plugin-process = "2.0.0-beta"
+tauri-plugin-global-shortcut = "2.0.0-rc.2"
+tauri-plugin-updater = "2.0.0-rc.2"
+tauri-plugin-process = "2.0.0-rc.1"
 cocoa = "0.25.0"
 objc = "0.2.7"
 accessibility-sys = "0.1.3"
@@ -33,6 +33,15 @@ serde = "1.0.197"
 active-win-pos-rs = "0.8.3"
 nanoid = "0.4.0"
 objc_id = "0.1.1"
+objc2-app-kit = { version = "0.2.2", features = [
+  "NSPopover",
+  "NSButton",
+  "NSColor",
+  "NSViewController",
+] }
+objc2 = "0.5.2"
+objc2-foundation = "0.2.2"
+tauri-plugin-autostart = "2.0.0-rc.1"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

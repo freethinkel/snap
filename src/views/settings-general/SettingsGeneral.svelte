@@ -3,12 +3,14 @@
   import FancyZonesPlaceholder from "./FancyZonesPlaceholder.svelte";
   import WindowGap from "./WindowGap.svelte";
   import WindowManager from "./WindowManager.svelte";
+  import Autostart from "./Autostart.svelte";
   import * as systemStore from "@/stores/system";
 
   const appVersion = systemStore.$appVersion;
 </script>
 
 <div class="wrapper">
+  <Autostart />
   <WindowGap />
   <FancyZonesPlaceholder />
   <WindowManager />

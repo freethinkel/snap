@@ -7,7 +7,7 @@ use crate::{
     },
     extensions::notification::NSNotificationCenter,
 };
-use tauri::{command, AppHandle, Manager};
+use tauri::{command, AppHandle, Emitter};
 
 use cocoa::{
     self,

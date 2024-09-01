@@ -2,8 +2,11 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use patch_window::overlay::patch_overlay_window;
-use tauri::{ActivationPolicy, Manager};
-use tauri_plugin_nspopover::WindowExt;
+use tauri::{
+    tray::{MouseButton, MouseButtonState, TrayIconEvent},
+    ActivationPolicy, Manager,
+};
+use tauri_plugin_nspopover::{AppExt, WindowExt};
 
 mod commands;
 mod data;
@@ -25,9 +28,14 @@ use crate::commands::{
     nsscreen::{nsscreen_get_screens, nsscreen_listen_change, nsscreen_main},
     nswindow::{cgwindow_get_on_screen, nswindow_set_frame},
 };
+use tauri_plugin_autostart::MacosLauncher;
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_autostart::init(
+            MacosLauncher::LaunchAgent,
+            None,
+        ))
         .setup(|app| {
             app.set_activation_policy(ActivationPolicy::Accessory);
 
@@ -36,12 +44,33 @@ fn main() {
             patch_overlay_window(overlay);
             statusbar.to_popover();
 
+            let tray = app.tray_by_id("main").unwrap();
+            let handle = app.handle().clone();
+
+            tray.on_tray_icon_event(move |_, event| match event {
+                TrayIconEvent::Click {
+                    button,
+                    button_state,
+                    ..
+                } => {
+                    if button == MouseButton::Left && button_state == MouseButtonState::Up {
+                        if !handle.is_popover_shown() {
+                            handle.show_popover();
+                        } else {
+                            handle.hide_popover();
+                        }
+                    }
+                }
+                _ => {}
+            });
+
             Ok(())
         })
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_nspopover::init())
         .invoke_handler(tauri::generate_handler![
             nsscreen_get_screens,
             nsscreen_main,

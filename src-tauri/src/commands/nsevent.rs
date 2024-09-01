@@ -1,10 +1,4 @@
-use block::{Block, ConcreteBlock};
-use cocoa::appkit::NSApplication;
-use cocoa::base::id;
-use cocoa::foundation::NSString;
 use nanoid::nanoid;
-use objc::runtime::Class;
-use objc::{class, msg_send, sel, sel_impl};
 
 use crate::data::{frame::Point, mouse::MouseEvent};
 use crate::extensions::event_monitor::EventMonitor;
@@ -13,7 +7,7 @@ use cocoa::{
     appkit::{NSEvent, NSEventMask},
     base::nil,
 };
-use tauri::{command, Manager, Window};
+use tauri::{command, Emitter, Window};
 
 struct MonitorListeners {
     id: String,

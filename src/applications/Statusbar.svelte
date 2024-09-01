@@ -30,21 +30,10 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    animation: fix 10s infinite;
     height: 100%;
     height: 100vh;
   }
 
-  @keyframes fix {
-    0% {
-      transform: translateY(1%);
-      opacity: 0.99;
-    }
-    100% {
-      transform: translateY(0%);
-      opacity: 1;
-    }
-  }
   .top {
     flex: 1;
     padding: 8px;

@@ -106,28 +106,27 @@ sample({
   fn: ({ screen, gap }, data) => ({
     ...data,
     windows: data.windows.filter((window) => {
-      console.log(screen?.frame, window.frame);
-
       return (
-        screen?.frame.includesPoint(window.frame.position) ||
-        screen?.frame.includesPoint(
-          new Position(
-            window.frame.position.x + window.frame.size.width,
-            window.frame.position.y + window.frame.size.height,
-          ),
-        ) ||
-        screen?.frame.includesPoint(
-          new Position(
-            window.frame.position.x + window.frame.size.width,
-            window.frame.position.y,
-          ),
-        ) ||
-        screen?.frame.includesPoint(
-          new Position(
-            window.frame.position.x,
-            window.frame.position.y + window.frame.size.height,
-          ),
-        )
+        window.is_on_screen &&
+        (screen?.frame.includesPoint(window.frame.position) ||
+          screen?.frame.includesPoint(
+            new Position(
+              window.frame.position.x + window.frame.size.width,
+              window.frame.position.y + window.frame.size.height,
+            ),
+          ) ||
+          screen?.frame.includesPoint(
+            new Position(
+              window.frame.position.x + window.frame.size.width,
+              window.frame.position.y,
+            ),
+          ) ||
+          screen?.frame.includesPoint(
+            new Position(
+              window.frame.position.x,
+              window.frame.position.y + window.frame.size.height,
+            ),
+          ))
       );
     }),
     screen: screen!,

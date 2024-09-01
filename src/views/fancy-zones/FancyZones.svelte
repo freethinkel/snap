@@ -93,9 +93,11 @@
   @keyframes fixBlur {
     0% {
       opacity: 0.99999;
+      backdrop-filter: blur(10px);
     }
     100% {
       opacity: 1;
+      backdrop-filter: blur(11px);
     }
   }
 

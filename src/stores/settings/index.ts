@@ -4,8 +4,9 @@ import { createSharedStore } from "@/helpers";
 import { Frame } from "@/models/geometry/frame";
 import { MappingAction, keysToShortcut } from "@/models/mapping";
 import { getCurrent } from "@tauri-apps/api/webview";
-import { createEvent, sample } from "effector";
+import { createEffect, createEvent, createStore, sample } from "effector";
 import { MAPPING_ACTIONS } from "./mapping-actions";
+import * as autostartPlugin from "@tauri-apps/plugin-autostart";
 
 const $windowGap = createSharedStore<number>("window_gap", 10);
 const $mappings = createSharedStore("mappings", MAPPING_ACTIONS, {
@@ -32,6 +33,7 @@ const $placeholderMode = createSharedStore<"bordered" | "blurred">(
   "window_manager_placeholder_mode",
   "bordered",
 );
+const $autostartEnabled = createStore(false);
 
 const mappingActivated = createEvent<MappingAction>();
 const setMapping = createEvent<MappingAction>();
@@ -40,6 +42,29 @@ const setWindowGap = createEvent<number>();
 const setPlaceholderMode = createEvent<"bordered" | "blurred">();
 const setWindowManagerMode = createEvent<"snapping" | "fancy_zones">();
 const setShowFancyZonesPlaceholder = createEvent<boolean>();
+const setAutostartEnabled = createEvent<boolean>();
+
+autostartPlugin.isEnabled().then((isEnabled) => {
+  setAutostartEnabled(isEnabled);
+
+  const setAutostartFx = createEffect((state: boolean) => {
+    if (state) {
+      autostartPlugin.enable();
+    } else {
+      autostartPlugin.disable();
+    }
+  });
+
+  sample({
+    clock: $autostartEnabled,
+    target: setAutostartFx,
+  });
+
+  sample({
+    clock: setAutostartEnabled,
+    target: $autostartEnabled,
+  });
+});
 
 if (getCurrent().label === "main") {
   let prevShortcut: string[] | null = null;
@@ -122,6 +147,7 @@ export {
   $placeholderMode,
   $windowManagerMode,
   $arrangeWindowsShortcut,
+  $autostartEnabled,
   setWindowManagerMode,
   mappingActivated,
   setWindowGap,
@@ -129,4 +155,5 @@ export {
   setShowFancyZonesPlaceholder,
   setMapping,
   setArrangeWindowShortcut,
+  setAutostartEnabled,
 };

@@ -20,6 +20,7 @@ pub struct WindowInfo {
     pid: Option<i32>,
     name: Option<String>,
     frame: Option<Frame>,
+    is_on_screen: bool,
 }
 
 pub fn get_windows_on_screen() -> Vec<WindowInfo> {
@@ -101,15 +102,12 @@ pub fn get_windows_on_screen() -> Vec<WindowInfo> {
             id: window_id,
             name: window_name,
             frame: window_bounds,
+            is_on_screen: window_is_on_screen.unwrap_or(false),
         };
 
         if let Some(window_pid) = window_info.pid {
             if let Some(level) = window_level {
-                if window_pid != pid
-                    && level == 0
-                    && window_is_on_screen.is_some()
-                    && window_is_on_screen.unwrap() == true
-                {
+                if window_pid != pid && level == 0 {
                     windows.push(window_info);
                 }
             }

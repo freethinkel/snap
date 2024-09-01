@@ -48,8 +48,8 @@
 <div
   class="wrapper"
   bind:this={wrapperRef}
-  style:--size={`${size}px`}
-  style:--offset-left={`${offsetLeft * 100}%`}
+  style:--size="{size}px"
+  style:--offset={Math.max(Math.min(offsetLeft, 1), 0)}
 >
   <div class="line" />
   <div class="line__active" />
@@ -85,14 +85,12 @@
     transform: translateY(-50%);
     border-radius: var(--size);
     background-color: var(--color-accent);
-    width: var(--offset-left);
+    width: calc(var(--offset) * 100%);
     height: 4px;
   }
   .thumb__wrapper {
     position: absolute;
-    left: 0;
-    transform: translateX(var(--offset-left));
-    width: calc(100% - var(--size));
+    left: calc(var(--offset) * 100% - var(--size) * var(--offset));
   }
   .thumb {
     appearance: none;
@@ -110,6 +108,7 @@
     width: var(--size);
     min-width: var(--size);
     height: var(--size);
+
     &:active {
       transform: scale(1.2);
     }
