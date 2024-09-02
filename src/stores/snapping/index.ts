@@ -87,7 +87,9 @@ const $enabled = combine(
   ([enabled, mode]) => enabled && mode === "snapping",
 );
 const $sensitive = createStore(100);
-const $placeholder = createStore<Frame | null>(null, { updateFilter: Boolean });
+const $placeholder = createStore<Frame | null>(null, {
+  updateFilter: () => true,
+});
 
 sample({
   clock: windowManagerStore.$draggingPosition,
