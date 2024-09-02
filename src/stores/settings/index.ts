@@ -83,20 +83,16 @@ if (getCurrent().label === "main") {
     prevShortcut = shortcut;
   });
 
-  let prevMappings: MappingAction[] = [];
   $mappings.subscribe(async (mappings) => {
-    // FIXME: IDK why, but unregisterAll not working, maybe fix later
     globalShortcut.unregisterAll();
-    // await Promise.all(
-    //   [...mappings, ...prevMappings]
-    //     .filter((mapping) => mapping.shortcut.length)
-    //     .map((mapping) => globalShortcut.unregister(mapping.keysToShortcut())),
-    // );
-    prevMappings = mappings;
+
     mappings
       .filter((mapping) => mapping.shortcut.length)
       .forEach((mapping) => {
-        globalShortcut.register(mapping.keysToShortcut(), () => {
+        globalShortcut.register(mapping.keysToShortcut(), (event) => {
+          if (event.state !== "Pressed") {
+            return;
+          }
           mappingActivated(mapping);
         });
       });
