@@ -44,28 +44,6 @@ const setWindowManagerMode = createEvent<"snapping" | "fancy_zones">();
 const setShowFancyZonesPlaceholder = createEvent<boolean>();
 const setAutostartEnabled = createEvent<boolean>();
 
-autostartPlugin.isEnabled().then((isEnabled) => {
-  setAutostartEnabled(isEnabled);
-
-  const setAutostartFx = createEffect((state: boolean) => {
-    if (state) {
-      autostartPlugin.enable();
-    } else {
-      autostartPlugin.disable();
-    }
-  });
-
-  sample({
-    clock: $autostartEnabled,
-    target: setAutostartFx,
-  });
-
-  sample({
-    clock: setAutostartEnabled,
-    target: $autostartEnabled,
-  });
-});
-
 if (getCurrent().label === "main") {
   let prevShortcut: string[] | null = null;
   $arrangeWindowsShortcut.subscribe(async (shortcut) => {
@@ -135,6 +113,28 @@ sample({
 sample({
   clock: setWindowManagerMode,
   target: $windowManagerMode,
+});
+
+sample({
+  clock: setAutostartEnabled,
+  target: $autostartEnabled,
+});
+
+autostartPlugin.isEnabled().then((isEnabled) => {
+  setAutostartEnabled(isEnabled);
+
+  const setAutostartFx = createEffect((state: boolean) => {
+    if (state) {
+      autostartPlugin.enable();
+    } else {
+      autostartPlugin.disable();
+    }
+  });
+
+  sample({
+    clock: $autostartEnabled,
+    target: setAutostartFx,
+  });
 });
 
 export {

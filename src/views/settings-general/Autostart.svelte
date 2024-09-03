@@ -12,7 +12,7 @@
     <Switch
       checked={$isAutostartEnabled}
       on:change={({ detail }) => settingsStore.setAutostartEnabled(detail)}
-      >Autostart</Switch
+      >Launch at login</Switch
     >
   </FormGroup>
 </div>
