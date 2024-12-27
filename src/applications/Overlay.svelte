@@ -10,12 +10,14 @@
   import { check } from "@tauri-apps/plugin-updater";
   import { onMount } from "svelte";
   import { relaunch } from "@tauri-apps/plugin-process";
+  import { Snowfall } from "@/components/snowfall";
 
   windowManagerStore.startWindowManagerListenFx();
   screensStore.getScreensFx();
 
   const mode = settingsStore.$windowManagerMode;
   const enabled = statusbarStore.$windowManagerEnabled;
+  const snowfallEnabled = settingsStore.$snowfallEnabled;
 
   const checkUpdate = async () => {
     const update = await check();
@@ -40,4 +42,8 @@
   {:else if $mode === "snapping"}
     <Snapping />
   {/if}
+{/if}
+
+{#if $snowfallEnabled}
+  <Snowfall />
 {/if}

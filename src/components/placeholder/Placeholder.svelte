@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Frame } from "@/models/geometry/frame";
+  import { Frame, Position, Size } from "@/models/geometry/frame";
   import { fade } from "svelte/transition";
 
   export let frame: Frame;
@@ -41,7 +41,8 @@
 
   .blurred {
     backdrop-filter: blur(20px);
-    animation: 10s fixBlur infinite alternate;
+    -webkit-backdrop-filter: blur(20px);
+    animation: 1s fixBlur infinite alternate;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.24);
     background-color: color-mix(in srgb, transparent, var(--color-accent) 12%);
   }
@@ -49,7 +50,7 @@
   /* fix rerender blur */
   @keyframes fixBlur {
     0% {
-      opacity: 0.99999;
+      opacity: 0.5;
     }
     100% {
       opacity: 1;

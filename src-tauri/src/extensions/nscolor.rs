@@ -3,7 +3,6 @@ use objc::{class, msg_send, sel, sel_impl};
 
 pub trait NSAColor: Sized {
     unsafe fn accent_color(_: Self) -> Self;
-    unsafe fn start_listen(_: Self);
     unsafe fn to_rgb(color: Self) -> String;
 }
 
@@ -28,6 +27,4 @@ impl NSAColor for id {
             return color;
         }
     }
-
-    unsafe fn start_listen(_: Self) {}
 }

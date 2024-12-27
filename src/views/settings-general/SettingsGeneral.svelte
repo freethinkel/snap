@@ -5,12 +5,14 @@
   import WindowManager from "./WindowManager.svelte";
   import Autostart from "./Autostart.svelte";
   import * as systemStore from "@/stores/system";
+  import Snowfall from "./Snowfall.svelte";
 
   const appVersion = systemStore.$appVersion;
 </script>
 
 <div class="wrapper">
   <Autostart />
+  <Snowfall />
   <WindowGap />
   <FancyZonesPlaceholder />
   <WindowManager />

@@ -9,6 +9,7 @@ import { MAPPING_ACTIONS } from "./mapping-actions";
 import * as autostartPlugin from "@tauri-apps/plugin-autostart";
 
 const $windowGap = createSharedStore<number>("window_gap", 10);
+const $snowfallEnabled = createSharedStore<boolean>("snowfall_enabled", false);
 const $mappings = createSharedStore("mappings", MAPPING_ACTIONS, {
   restoreMap: (data) =>
     (data as Array<object>).map(
@@ -43,6 +44,7 @@ const setPlaceholderMode = createEvent<"bordered" | "blurred">();
 const setWindowManagerMode = createEvent<"snapping" | "fancy_zones">();
 const setShowFancyZonesPlaceholder = createEvent<boolean>();
 const setAutostartEnabled = createEvent<boolean>();
+const setSnowfallEnabled = createEvent<boolean>();
 
 if (getCurrent().label === "main") {
   let prevShortcut: string[] | null = null;
@@ -120,6 +122,11 @@ sample({
   target: $autostartEnabled,
 });
 
+sample({
+  clock: setSnowfallEnabled,
+  target: $snowfallEnabled,
+});
+
 autostartPlugin.isEnabled().then((isEnabled) => {
   setAutostartEnabled(isEnabled);
 
@@ -145,6 +152,8 @@ export {
   $windowManagerMode,
   $arrangeWindowsShortcut,
   $autostartEnabled,
+  $snowfallEnabled,
+  setSnowfallEnabled,
   setWindowManagerMode,
   mappingActivated,
   setWindowGap,

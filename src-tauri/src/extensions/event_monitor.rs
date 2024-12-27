@@ -57,7 +57,3 @@ impl EventMonitor {
 extern "C" {
     fn CGEventGetLocation(event: CGEventRef) -> CGPoint;
 }
-
-extern "C" {
-    pub fn NSMouseInRect(aPoint: NSPoint, aRect: NSRect, flipped: BOOL) -> BOOL;
-}

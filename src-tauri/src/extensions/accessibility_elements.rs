@@ -11,7 +11,6 @@ use core_foundation::{
     string::CFString,
 };
 use core_graphics::{display::CGWindowID, geometry::CGSize};
-use objc::{msg_send, sel, sel_impl};
 
 pub fn get_window_from_id(pid: i32, id: u32) -> Result<AXUIElementRef, ()> {
     let window_owner = unsafe { AXUIElementCreateApplication(pid) };
