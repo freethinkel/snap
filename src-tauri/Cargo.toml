@@ -12,13 +12,13 @@ tauri-build = { version = "^2.0.0-rc.6", features = [] }
 
 [dependencies]
 tauri = { version = "^2.0.0-rc.6", features = [
-    "macos-private-api",
-    "tray-icon",
-    "image-png",
+  "macos-private-api",
+  "tray-icon",
+  "image-png",
 ] }
 tauri-plugin-shell = "^2.0.0-rc.2"
 serde_json = "1.0"
-tauri-plugin-nspopover = { git = "https://github.com/freethinkel/tauri-nspopover-plugin.git", branch = "tauri-beta/v2", version = "3.3.0"}
+tauri-plugin-nspopover = { git = "https://github.com/freethinkel/tauri-nspopover-plugin.git", branch = "tauri-beta/v2", version = "3.3.0" }
 # tauri-plugin-nspopover = { path = "../../tauri-plugin-nspopover" }
 [target."cfg(not(any(target_os = \"android\", target_os = \"ios\")))".dependencies]
 tauri-plugin-global-shortcut = "2.0.0-rc"
