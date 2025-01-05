@@ -15,11 +15,10 @@
   const placeholder = fancyZonesStore.$placeholder;
 
   const showFancyZonesPlaceholder = settingsStore.$showFancyZonesPlaceholder;
-  const mode = settingsStore.$placeholderMode;
 </script>
 
 {#if $showFancyZonesPlaceholder && $placeholder}
-  <Placeholder frame={$placeholder} mode={$mode} />
+  <Placeholder frame={$placeholder} />
 {/if}
 
 <div

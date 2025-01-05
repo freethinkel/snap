@@ -4,9 +4,8 @@
   import * as settingsStore from "@/stores/settings";
 
   const frame = snappingStore.$placeholder;
-  const mode = settingsStore.$placeholderMode;
 </script>
 
 {#if $frame}
-  <Placeholder frame={$frame} mode={$mode} />
+  <Placeholder frame={$frame} />
 {/if}

@@ -31,8 +31,8 @@
   onMount(() => {
     checkUpdate();
 
-    // Check every 12 hours
-    setInterval(() => checkUpdate(), 1000 * 60 * 60 * 12);
+    // Check every 1 hours
+    setInterval(() => checkUpdate(), 1000 * 60 * 60 * 1);
   });
 </script>
 

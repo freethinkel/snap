@@ -1,5 +1,4 @@
 <script lang="ts">
-  import PlaceholderMode from "./PlaceholderMode.svelte";
   import FancyZonesPlaceholder from "./FancyZonesPlaceholder.svelte";
   import WindowGap from "./WindowGap.svelte";
   import WindowManager from "./WindowManager.svelte";
@@ -16,7 +15,6 @@
   <WindowGap />
   <FancyZonesPlaceholder />
   <WindowManager />
-  <PlaceholderMode />
   <div class="footer">
     <div class="version">
       Version: {$appVersion}

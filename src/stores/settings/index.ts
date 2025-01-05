@@ -30,17 +30,12 @@ const $showFancyZonesPlaceholder = createSharedStore(
   true,
 );
 
-const $placeholderMode = createSharedStore<"bordered" | "blurred">(
-  "window_manager_placeholder_mode",
-  "bordered",
-);
 const $autostartEnabled = createStore(false);
 
 const mappingActivated = createEvent<MappingAction>();
 const setMapping = createEvent<MappingAction>();
 const setArrangeWindowShortcut = createEvent<string[] | null>();
 const setWindowGap = createEvent<number>();
-const setPlaceholderMode = createEvent<"bordered" | "blurred">();
 const setWindowManagerMode = createEvent<"snapping" | "fancy_zones">();
 const setShowFancyZonesPlaceholder = createEvent<boolean>();
 const setAutostartEnabled = createEvent<boolean>();
@@ -82,11 +77,6 @@ if (getCurrent().label === "main") {
 sample({
   clock: setWindowGap,
   target: $windowGap,
-});
-
-sample({
-  clock: setPlaceholderMode,
-  target: $placeholderMode,
 });
 
 sample({
@@ -148,7 +138,6 @@ export {
   $windowGap,
   $mappings,
   $showFancyZonesPlaceholder,
-  $placeholderMode,
   $windowManagerMode,
   $arrangeWindowsShortcut,
   $autostartEnabled,
@@ -157,7 +146,6 @@ export {
   setWindowManagerMode,
   mappingActivated,
   setWindowGap,
-  setPlaceholderMode,
   setShowFancyZonesPlaceholder,
   setMapping,
   setArrangeWindowShortcut,
