@@ -28,7 +28,8 @@ const main = () => {
 
   const manifest = {
     version: `v${packageJson.version}`,
-    notes: "Check the complete changelog at https://trysnap.app/changelogs",
+    notes:
+      "Check the complete changelog at https://github.com/freethinkel/snap",
     pub_date: new Date().toISOString(),
     platforms: {
       "darwin-x86_64": {
