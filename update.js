@@ -1,7 +1,7 @@
 import * as fs from "fs";
 
 const FOLDER = "update";
-const UPDATE_URL = "https://trysnap.app/releases/";
+const UPDATE_URL = "https://freethinkel.dev/assets/apps/snap/releases/";
 
 const main = () => {
   const packageJson = JSON.parse(fs.readFileSync("./package.json"));

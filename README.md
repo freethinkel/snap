@@ -1,7 +1,29 @@
-# Tauri + Svelte + Typescript
+# Snap App - Window Manager for Mac
 
-This template should help get you started developing with Tauri, Svelte and TypeScript in Vite.
+![Snap App](https://freethinkel.dev/apps/snap/SnapLogo.png)
 
-## Recommended IDE Setup
+Snap is the ultimate window manager tool tailor-made for your Mac. Say goodbye to cluttered screens and hello to a streamlined workflow. Utilize Snap to maximize productivity and increase efficiency.
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer).
+Visit our official website [here](https://freethinkel.dev/apps/snap/).
+
+## Features
+
+### Fancy Zones
+
+Customize your workspace by creating window layouts for effective multitasking.
+
+### Snapping
+
+Quickly and easily arrange your windows side by side, in corners, or maximize them with precision.
+
+### Shortcuts
+
+Utilize simple shortcuts to move active windows across your screen. Snap's intuitive interface means you spend less time adjusting windows and more time focusing on what matters.
+
+### Autoarrange Windows
+
+Keep your screen organized with automatic window arrangement.
+
+## Installation
+
+[Download](https://freethinkel.dev/apps/snap/) the latest version of Snap from the official website.
