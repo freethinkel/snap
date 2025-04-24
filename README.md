@@ -1,6 +1,6 @@
 # Snap App - Window Manager for Mac
 
-<img src="./src-tauri/icons/icon.png" style="max-width: 100px"/>
+<img src="./src-tauri/icons/icon.png" style="width: 100px"/>
 
 Snap is the ultimate window manager tool tailor-made for your Mac. Say goodbye to cluttered screens and hello to a streamlined workflow. Utilize Snap to maximize productivity and increase efficiency.
 
