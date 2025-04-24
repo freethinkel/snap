@@ -6,29 +6,27 @@ Snap is the ultimate window manager tool tailor-made for your Mac. Say goodbye t
 
 Visit the website [here](https://freethinkel.dev/apps/snap/).
 
-## Features
+## Fancy Zones
 
-### Fancy Zones
-
-<video src="./videos/fancy-zones.mp4"></video>
+![Showcase](./videos/fancy-zones.gif)
 
 Customize your workspace by creating window layouts for effective multitasking.
 
-### Snapping
+## Snapping
 
-<video src="./videos/snapping.mp4"></video>
+![Showcase](./videos/snapping.gif)
 
 Quickly and easily arrange your windows side by side, in corners, or maximize them with precision.
 
-### Shortcuts
+## Shortcuts
 
-<video src="./videos/shortcuts.mp4"></video>
+![Showcase](./videos/shortcuts.gif)
 
 Utilize simple shortcuts to move active windows across your screen. Snap's intuitive interface means you spend less time adjusting windows and more time focusing on what matters.
 
-### Autoarrange Windows
+## Autoarrange Windows
 
-<video src="./videos/arrange-windows.mp4"></video>
+![Showcase](./videos/arrange-windows.gif)
 
 Keep your screen organized with automatic window arrangement.
 
