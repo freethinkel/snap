@@ -61,7 +61,6 @@
     gap: 5px;
     transform: translateX(-50%) translateY(-300%);
     opacity: 1 !important;
-    backdrop-filter: blur(10px);
     animation: 10s fixBlur infinite alternate;
     transition: 0.2s ease-out transform;
     box-shadow:
@@ -75,7 +74,7 @@
     background-color: color-mix(
       in srgb,
       transparent,
-      var(--color-background) 70%
+      var(--color-background) 80%
     );
     padding: 8px;
 
@@ -85,18 +84,6 @@
 
     &.active {
       transform: translateX(-50%) translateY(0);
-    }
-  }
-
-  /* fix rerender blur */
-  @keyframes fixBlur {
-    0% {
-      opacity: 0.99999;
-      backdrop-filter: blur(10px);
-    }
-    100% {
-      opacity: 1;
-      backdrop-filter: blur(11px);
     }
   }
 

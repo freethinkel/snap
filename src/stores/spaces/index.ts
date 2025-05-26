@@ -28,6 +28,79 @@ const setFrame = async (window: CGWindow, frame: Frame) => {
   });
 };
 
+const generateFramesByRecursiveSplit = (windowCount: number): Frame[] => {
+  if (windowCount <= 0) return [];
+
+  // Start with full screen space
+  const initialSpaces = [new Frame(new Size(1, 1), new Position(0, 0))];
+
+  const splitSpaces = (spaces: Frame[], targetCount: number): Frame[] => {
+    if (spaces.length >= targetCount) {
+      return spaces.slice(0, targetCount);
+    }
+
+    // Calculate how many more spaces we need
+    const spacesNeeded = targetCount - spaces.length;
+
+    // Only split as many spaces as needed
+    // Sort spaces by area (largest first) to split the biggest spaces first
+    const sortedSpaces = [...spaces].sort(
+      (a, b) => b.size.width * b.size.height - a.size.width * a.size.height,
+    );
+
+    const spacesToSplit = sortedSpaces.slice(0, spacesNeeded);
+    const spacesToKeep = spaces.filter(
+      (space) => !spacesToSplit.includes(space),
+    );
+
+    const newSpaces: Frame[] = [...spacesToKeep];
+
+    for (const space of spacesToSplit) {
+      // Decide whether to split horizontally or vertically
+      // Split along the longer dimension to keep spaces roughly square
+      const shouldSplitHorizontally = space.size.width >= space.size.height;
+
+      if (shouldSplitHorizontally) {
+        // Split horizontally (left and right)
+        const leftWidth = space.size.width / 2;
+        const rightWidth = space.size.width / 2;
+
+        const leftFrame = new Frame(
+          new Size(leftWidth, space.size.height),
+          new Position(space.position.x, space.position.y),
+        );
+
+        const rightFrame = new Frame(
+          new Size(rightWidth, space.size.height),
+          new Position(space.position.x + leftWidth, space.position.y),
+        );
+
+        newSpaces.push(leftFrame, rightFrame);
+      } else {
+        // Split vertically (top and bottom)
+        const topHeight = space.size.height / 2;
+        const bottomHeight = space.size.height / 2;
+
+        const topFrame = new Frame(
+          new Size(space.size.width, topHeight),
+          new Position(space.position.x, space.position.y),
+        );
+
+        const bottomFrame = new Frame(
+          new Size(space.size.width, bottomHeight),
+          new Position(space.position.x, space.position.y + topHeight),
+        );
+
+        newSpaces.push(topFrame, bottomFrame);
+      }
+    }
+
+    return splitSpaces(newSpaces, targetCount);
+  };
+
+  return splitSpaces(initialSpaces, windowCount);
+};
+
 const arrangeWindowsOnCurrentScreenFx = createEffect(
   async ({
     windows,
@@ -39,7 +112,7 @@ const arrangeWindowsOnCurrentScreenFx = createEffect(
     gap: number;
   }) => {
     try {
-      const frames = [
+      const predefinedFrames = [
         [new Frame(new Size(1, 1), new Position(0, 0))],
         [
           new Frame(new Size(0.5, 1), new Position(0, 0)),
@@ -63,21 +136,29 @@ const arrangeWindowsOnCurrentScreenFx = createEffect(
           new Frame(new Size(0.25, 0.5), new Position(0.5, 0.5)),
           new Frame(new Size(0.25, 0.5), new Position(0.75, 0.5)),
         ],
-      ].map((frames) =>
-        frames.map((frame) => {
-          const placeholder = windowManagerStore.frameToPlaceholder({
-            gap,
-            screen: screen!,
-          })(frame);
+      ];
 
-          return windowManagerStore.placeholderToScreen(screen!)(placeholder!);
-        }),
-      );
+      // Use predefined frames for 1-5 windows, generate recursive split for 6+ windows
+      let rawFrames: Frame[];
+      if (windows.length <= 5) {
+        rawFrames = predefinedFrames[windows.length - 1];
+      } else {
+        rawFrames = generateFramesByRecursiveSplit(windows.length);
+      }
 
-      const framesForWindows = frames[windows.length - 1];
-      if (!framesForWindows?.length) {
+      if (!rawFrames?.length) {
         return;
       }
+
+      const framesForWindows = rawFrames.map((frame) => {
+        const placeholder = windowManagerStore.frameToPlaceholder({
+          gap,
+          screen: screen!,
+        })(frame);
+
+        return windowManagerStore.placeholderToScreen(screen!)(placeholder!);
+      });
+
       windows.forEach((window, i) => {
         setFrame(window, framesForWindows[i]);
       });
