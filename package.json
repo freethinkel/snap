@@ -1,7 +1,7 @@
 {
   "name": "snap",
   "private": true,
-  "version": "1.4.0",
+  "version": "1.4.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,7 @@
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "tauri": "tauri",
     "tauri:local": "TAURI_SIGNING_PRIVATE_KEY=$(cat ~/.tauri/snap_app.key) eval $(cat .env) tauri",
-    "create:update": "pnpm tauri:local build --target aarch64-apple-darwin && pnpm tauri:local build --target x86_64-apple-darwin && node update.js"
+    "create:update": "CI=true pnpm tauri:local build --target aarch64-apple-darwin && pnpm tauri:local build --target x86_64-apple-darwin && node update.js"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.5.0",

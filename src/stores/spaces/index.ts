@@ -6,6 +6,7 @@ import type { NSScreen } from "@/models/cocoa/nsscreen";
 import * as windowManagerStore from "../window-manager";
 import * as settingsStore from "../settings";
 import { listen } from "@tauri-apps/api/event";
+import { IGNORED_WINDOWS } from "./ignored-apps";
 
 const loadAllData = createEvent();
 const arrangeWindowsOnCurrentScreen = createEvent();
@@ -103,7 +104,7 @@ const generateFramesByRecursiveSplit = (windowCount: number): Frame[] => {
 
 const arrangeWindowsOnCurrentScreenFx = createEffect(
   async ({
-    windows,
+    windows: allWindows,
     screen,
     gap,
   }: {
@@ -137,6 +138,19 @@ const arrangeWindowsOnCurrentScreenFx = createEffect(
           new Frame(new Size(0.25, 0.5), new Position(0.75, 0.5)),
         ],
       ];
+
+      const windows = allWindows.filter((win) => {
+        const has = IGNORED_WINDOWS.some((ignoredWindow) => {
+          if (typeof ignoredWindow === "string") {
+            return ignoredWindow === win.name;
+          }
+          if (ignoredWindow instanceof RegExp) {
+            return ignoredWindow.test(win.name);
+          }
+        });
+
+        return !has;
+      });
 
       // Use predefined frames for 1-5 windows, generate recursive split for 6+ windows
       let rawFrames: Frame[];
