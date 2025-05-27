@@ -1,9 +1,9 @@
 import { emit, listen } from "@tauri-apps/api/event";
-import { getCurrent } from "@tauri-apps/api/window";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 
 import { createEvent, createStore, sample } from "effector";
 
-const appWindow = getCurrent();
+const appWindow = getCurrentWindow();
 
 type Options<T> = {
   invalidate?: (store: T) => boolean;

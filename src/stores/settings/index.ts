@@ -3,7 +3,7 @@ import * as globalShortcut from "@tauri-apps/plugin-global-shortcut";
 import { createSharedStore } from "@/helpers";
 import { Frame } from "@/models/geometry/frame";
 import { MappingAction, keysToShortcut } from "@/models/mapping";
-import { getCurrent } from "@tauri-apps/api/webview";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { createEffect, createEvent, createStore, sample } from "effector";
 import { MAPPING_ACTIONS } from "./mapping-actions";
 import * as autostartPlugin from "@tauri-apps/plugin-autostart";
@@ -41,7 +41,7 @@ const setShowFancyZonesPlaceholder = createEvent<boolean>();
 const setAutostartEnabled = createEvent<boolean>();
 const setSnowfallEnabled = createEvent<boolean>();
 
-if (getCurrent().label === "main") {
+if (getCurrentWindow().label === "main") {
   let prevShortcut: string[] | null = null;
   $arrangeWindowsShortcut.subscribe(async (shortcut) => {
     if (prevShortcut?.length) {

@@ -1,6 +1,9 @@
 import { createEffect, createEvent, sample } from "effector";
 
-import { WebviewWindow, getCurrent } from "@tauri-apps/api/webviewWindow";
+import {
+  WebviewWindow,
+  getCurrentWebviewWindow,
+} from "@tauri-apps/api/webviewWindow";
 import * as caffeinateStore from "./caffeinate";
 import { createSharedStore, wait } from "@/helpers";
 import {
@@ -9,7 +12,7 @@ import {
 } from "../window-manager";
 import { exit } from "@tauri-apps/plugin-process";
 
-const isOverlayWindow = getCurrent().label === "main";
+const isOverlayWindow = getCurrentWebviewWindow().label === "main";
 
 const $windowManagerEnabled = createSharedStore(
   "window_manager_enabled",
@@ -21,7 +24,7 @@ const onSettingsClick = createEvent();
 const setWindowManagerEnabled = createEvent<boolean>();
 
 const openSettingsWindowFx = createEffect(async () => {
-  const settings = (() => {
+  const settings = await (() => {
     try {
       return new WebviewWindow("settings", {
         fullscreen: false,
@@ -36,13 +39,13 @@ const openSettingsWindowFx = createEffect(async () => {
     } catch (err) {
       return WebviewWindow.getByLabel("settings")!;
     }
-  })();
+  })()!;
 
   await wait(100);
 
-  settings.setMinimizable(false);
-  await settings.show();
-  settings.setFocus();
+  settings?.setMinimizable(false);
+  await settings?.show();
+  settings?.setFocus();
 });
 
 const exitAppFx = createEffect(async () => {

@@ -1,9 +1,9 @@
 import { createSharedStore, wait } from "@/helpers";
-import { getCurrent } from "@tauri-apps/api/webview";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { Command } from "@tauri-apps/plugin-shell";
 import { createEffect, createEvent, sample } from "effector";
 
-const appWindow = getCurrent();
+const appWindow = getCurrentWindow();
 
 const changeCaffeinateFx = createEffect(async (state: boolean) => {
   if (appWindow.label !== "main") {

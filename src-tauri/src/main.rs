@@ -6,7 +6,7 @@ use tauri::{
     tray::{MouseButton, MouseButtonState, TrayIconEvent},
     ActivationPolicy, Manager,
 };
-use tauri_plugin_nspopover::{AppExt, WindowExt};
+use tauri_plugin_nspopover::{AppExt, ToPopoverOptions, WindowExt};
 
 mod commands;
 mod data;
@@ -43,7 +43,9 @@ fn main() {
             let statusbar = app.get_webview_window("statusbar").unwrap();
             let overlay = app.get_webview_window("main").unwrap();
             patch_overlay_window(overlay);
-            statusbar.to_popover();
+            statusbar.to_popover(ToPopoverOptions {
+                is_fullsize_content: false,
+            });
 
             let tray = app.tray_by_id("main").unwrap();
             let handle = app.handle().clone();

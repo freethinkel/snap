@@ -14,9 +14,9 @@ import {
 import { NSEvent, NSEventType } from "@/models/cocoa/nsevent";
 import { AccessibilityElement } from "@/models/cocoa/accessibility-element";
 import { throttle } from "@/helpers";
-import { getCurrent } from "@tauri-apps/api/webview";
+import { getCurrentWebview } from "@tauri-apps/api/webview";
 
-const isOverlayWindow = getCurrent().label === "main";
+const isOverlayWindow = getCurrentWebview().label === "main";
 
 type MouseEvent<T extends "down" | "up" | "dragged"> = {
   type: T;

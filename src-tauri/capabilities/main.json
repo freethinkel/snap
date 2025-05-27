@@ -2,8 +2,14 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Capability for the main window",
-  "windows": ["main", "statusbar", "settings"],
-  "platforms": ["macOS"],
+  "windows": [
+    "main",
+    "statusbar",
+    "settings"
+  ],
+  "platforms": [
+    "macOS"
+  ],
   "permissions": [
     "core:path:default",
     "core:event:default",
@@ -44,6 +50,9 @@
     "autostart:allow-enable",
     "autostart:allow-disable",
     "autostart:allow-is-enabled",
+    "nspopover:allow-show-popover",
+    "nspopover:allow-hide-popover",
+    "nspopover:allow-is-popover-shown",
     {
       "identifier": "shell:allow-execute",
       "allow": [
@@ -68,6 +77,7 @@
           ]
         }
       ]
-    }
+    },
+    "global-shortcut:default"
   ]
 }
