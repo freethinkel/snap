@@ -202,6 +202,7 @@ sample({
     ...data,
     windows: data.windows.filter((window) => {
       return (
+        window.is_main &&
         window.is_on_screen &&
         (screen?.frame.includesPoint(window.frame.position) ||
           screen?.frame.includesPoint(

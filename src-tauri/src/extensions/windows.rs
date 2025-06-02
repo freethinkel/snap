@@ -1,9 +1,14 @@
+use std::ptr;
+
+use accessibility_sys::{
+    kAXMainAttribute, kAXMainWindowAttribute, AXUIElementCopyAttributeValue, AXUIElementRef,
+};
 use cocoa::base::id;
 use core_foundation::{
     array::{CFArray, CFArrayRef},
-    base::{CFType, FromVoid, TCFType, ToVoid},
+    base::{CFType, CFTypeRef, FromVoid, TCFType, ToVoid},
     boolean::CFBoolean,
-    number::CFNumber,
+    number::{CFBooleanGetValue, CFBooleanRef, CFNumber},
     string::CFString,
 };
 use core_graphics::display::{
@@ -14,6 +19,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::data::frame::{Frame, Point, Size};
 
+use super::accessibility_elements::get_window_from_id;
+
 #[derive(Serialize, Deserialize, Clone)]
 pub struct WindowInfo {
     id: Option<i32>,
@@ -21,6 +28,7 @@ pub struct WindowInfo {
     name: Option<String>,
     frame: Option<Frame>,
     is_on_screen: bool,
+    is_main: bool,
 }
 
 pub fn get_windows_on_screen() -> Vec<WindowInfo> {
@@ -62,6 +70,18 @@ pub fn get_windows_on_screen() -> Vec<WindowInfo> {
                     .downcast::<CFNumber>()
                     .map(|value| value.to_i32().unwrap())
             });
+
+        let is_main = Some((window_id, window_pid))
+            .map(|(id, pid)| {
+                if let Some(id) = id {
+                    if let Some(pid) = pid {
+                        return is_main_window(pid, id as u32);
+                    }
+                }
+                false
+            })
+            .unwrap_or(false);
+
         let window_is_on_screen =
             window
                 .find(CFString::new("kCGWindowIsOnscreen"))
@@ -102,6 +122,7 @@ pub fn get_windows_on_screen() -> Vec<WindowInfo> {
             id: window_id,
             name: window_name,
             frame: window_bounds,
+            is_main,
             is_on_screen: window_is_on_screen.unwrap_or(false),
         };
 
@@ -115,4 +136,29 @@ pub fn get_windows_on_screen() -> Vec<WindowInfo> {
     }
 
     windows
+}
+
+pub fn is_main_window(window_pid: i32, window_id: u32) -> bool {
+    let mut is_main = false;
+    let mut value: CFTypeRef = ptr::null();
+
+    let win = get_window_from_id(window_pid, window_id);
+    if let Ok(window) = win {
+        unsafe {
+            AXUIElementCopyAttributeValue(
+                window,
+                CFString::new(kAXMainAttribute).as_concrete_TypeRef(),
+                &mut value as *mut CFTypeRef,
+            )
+        };
+        is_main = unsafe {
+            if !value.is_null() {
+                CFBooleanGetValue(value as CFBooleanRef)
+            } else {
+                false
+            }
+        };
+    }
+
+    is_main
 }

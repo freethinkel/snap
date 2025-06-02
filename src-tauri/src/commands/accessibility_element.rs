@@ -1,25 +1,23 @@
 use accessibility_sys::{
     kAXTrustedCheckOptionPrompt, AXIsProcessTrusted, AXIsProcessTrustedWithOptions,
 };
-use active_win_pos_rs::get_active_window;
 use cocoa::{
-    appkit::{CGPoint, NSApp, NSRunningApplication},
-    base::{id, nil},
-    foundation::{NSBundle, NSString},
+    appkit::{CGPoint, NSRunningApplication},
+    base::nil,
+    foundation::NSBundle,
 };
 use core_foundation::{
     base::TCFType, boolean::CFBoolean, dictionary::CFDictionary, string::CFString,
 };
+
 use core_graphics::geometry::CGSize;
-use objc_id::Id;
-use tauri::{command, AppHandle};
+use tauri::command;
 
 use crate::{
-    data::{
-        frame::{Frame, Point, Size},
-        window_info::WindowInfo,
+    data::window_info::WindowInfo,
+    extensions::accessibility_elements::{
+        get_active_window, get_window_from_id, set_position, set_size,
     },
-    extensions::accessibility_elements::{get_window_from_id, set_position, set_size},
 };
 
 #[command]
@@ -28,17 +26,8 @@ pub fn accessibility_element_under_cursor() -> Result<WindowInfo, ()> {
     let result = match win {
         Ok(win) => Ok(WindowInfo {
             pid: win.process_id as i32,
-            window_id: win.window_id.parse().unwrap_or(0),
-            frame: Frame {
-                size: Size {
-                    width: win.position.width,
-                    height: win.position.height,
-                },
-                position: Point {
-                    x: win.position.x,
-                    y: win.position.y,
-                },
-            },
+            window_id: win.window_id as u32,
+            frame: win.frame,
         }),
         Err(_) => Err(()),
     };
@@ -63,18 +52,18 @@ pub fn accessibility_element_set_frame(window_info: WindowInfo) {
 
     match window {
         Ok(window) => {
-            set_position(
-                window,
-                CGPoint {
-                    x: window_info.frame.position.x,
-                    y: window_info.frame.position.y,
-                },
-            );
             set_size(
                 window,
                 CGSize {
                     width: window_info.frame.size.width,
                     height: window_info.frame.size.height,
+                },
+            );
+            set_position(
+                window,
+                CGPoint {
+                    x: window_info.frame.position.x,
+                    y: window_info.frame.position.y,
                 },
             );
         }

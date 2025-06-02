@@ -17,3 +17,27 @@ pub struct Size {
     pub width: f64,
     pub height: f64,
 }
+
+impl Default for Frame {
+    fn default() -> Self {
+        Frame {
+            size: Size::default(),
+            position: Point::default(),
+        }
+    }
+}
+
+impl Default for Point {
+    fn default() -> Self {
+        Point { x: 0.0, y: 0.0 }
+    }
+}
+
+impl Default for Size {
+    fn default() -> Self {
+        Size {
+            width: 0.0,
+            height: 0.0,
+        }
+    }
+}
