@@ -58,7 +58,6 @@ pub fn accessibility_element_set_frame(window_info: WindowInfo) {
                     y: window_info.frame.position.y,
                 },
             );
-            thread::sleep(Duration::from_millis(10));
             set_size(
                 window,
                 CGSize {
