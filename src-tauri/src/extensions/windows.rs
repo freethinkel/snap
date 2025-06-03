@@ -1,33 +1,32 @@
 use std::ptr;
 
-use accessibility_sys::{
-    kAXMainAttribute, kAXMainWindowAttribute, AXUIElementCopyAttributeValue, AXUIElementRef,
-};
-use cocoa::base::id;
+use accessibility_sys::{kAXMainAttribute, AXUIElementCopyAttributeValue};
 use core_foundation::{
-    array::{CFArray, CFArrayRef},
-    base::{CFType, CFTypeRef, FromVoid, TCFType, ToVoid},
-    boolean::CFBoolean,
-    number::{CFBooleanGetValue, CFBooleanRef, CFNumber},
+    array::{CFArrayGetCount, CFArrayGetValueAtIndex},
+    base::{CFRelease, CFTypeRef, TCFType},
+    number::{CFBooleanGetValue, CFBooleanRef},
     string::CFString,
 };
 use core_graphics::display::{
-    kCGNullWindowID, kCGWindowListExcludeDesktopElements, CFDictionary, CGWindowListCopyWindowInfo,
+    kCGNullWindowID, kCGWindowListExcludeDesktopElements, CFDictionaryRef,
+    CGWindowListCopyWindowInfo,
 };
-use objc::{msg_send, runtime::Class, sel, sel_impl};
+use objc2_foundation::NSProcessInfo;
 use serde::{Deserialize, Serialize};
 
-use crate::data::frame::{Frame, Point, Size};
+use crate::{
+    data::frame::Frame,
+    extensions::accessibility_elements::{get_from_dict, DictEntryValue},
+};
 
 use super::accessibility_elements::get_window_from_id;
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct WindowInfo {
-    id: Option<i32>,
-    pid: Option<i32>,
+    id: Option<i64>,
+    pid: Option<i64>,
     name: Option<String>,
     frame: Option<Frame>,
-    is_on_screen: bool,
     is_main: bool,
 }
 
@@ -35,110 +34,81 @@ pub fn get_windows_on_screen() -> Vec<WindowInfo> {
     let window_list_info =
         unsafe { CGWindowListCopyWindowInfo(kCGWindowListExcludeDesktopElements, kCGNullWindowID) };
 
-    let window_list: CFArray<CFDictionary<CFString, CFType>> =
-        unsafe { TCFType::wrap_under_create_rule(window_list_info as CFArrayRef) };
+    let windows_count: isize = unsafe { CFArrayGetCount(window_list_info) };
+
+    let process_info = NSProcessInfo::processInfo();
+    let pid: i64 = unsafe { process_info.processIdentifier() as i64 };
+
     let mut windows: Vec<WindowInfo> = vec![];
 
-    let process_info_class = Class::get("NSProcessInfo").unwrap();
-    let process_info: id = unsafe { msg_send![process_info_class, processInfo] };
-    let pid: i32 = unsafe { msg_send![process_info, processIdentifier] };
+    for i in 0..windows_count {
+        let mut win_pos = Frame::default();
+        let mut win_title = String::from("");
 
-    for i in 0..CFArray::len(&window_list) {
-        let window = window_list.get(i).unwrap();
+        let dic_ref = unsafe { CFArrayGetValueAtIndex(window_list_info, i) as CFDictionaryRef };
 
-        let window_name = window
-            .find(CFString::new("kCGWindowOwnerName"))
-            .and_then(|value| value.downcast::<CFString>().map(|value| value.to_string()));
-        let window_id = window
-            .find(CFString::new("kCGWindowNumber"))
-            .and_then(|value| {
-                value
-                    .downcast::<CFNumber>()
-                    .map(|value| value.to_i32().unwrap())
-            });
-        let window_pid = window
-            .find(CFString::new("kCGWindowOwnerPID"))
-            .and_then(|value| {
-                value
-                    .downcast::<CFNumber>()
-                    .map(|value| value.to_i32().unwrap())
-            });
-        let window_level = window
-            .find(CFString::new("kCGWindowLayer"))
-            .and_then(|value| {
-                value
-                    .downcast::<CFNumber>()
-                    .map(|value| value.to_i32().unwrap())
-            });
+        if dic_ref.is_null() {
+            continue;
+        }
 
-        let is_main = Some((window_id, window_pid))
-            .map(|(id, pid)| {
-                if let Some(id) = id {
-                    if let Some(pid) = pid {
-                        return is_main_window(pid, id as u32);
-                    }
+        let window_pid = get_from_dict(dic_ref, "kCGWindowOwnerPID");
+        let is_on_screen = get_from_dict(dic_ref, "kCGWindowIsOnscreen");
+        let window_level = get_from_dict(dic_ref, "kCGWindowLayer");
+
+        if let DictEntryValue::_Number(win_pid) = window_pid {
+            if win_pid == pid {
+                continue;
+            }
+
+            if let DictEntryValue::_Number(win_level) = window_level {
+                if win_level != 0 {
+                    continue;
                 }
-                false
-            })
-            .unwrap_or(false);
+            } else {
+                continue;
+            }
 
-        let window_is_on_screen =
-            window
-                .find(CFString::new("kCGWindowIsOnscreen"))
-                .and_then(|value| {
-                    value
-                        .downcast::<CFBoolean>()
-                        .map(|value| value == true.into())
-                });
-        let window_bounds = window
-            .find(CFString::new("kCGWindowBounds"))
-            .and_then(|value| {
-                value.downcast::<CFDictionary>().map(|value| Frame {
-                    size: Size {
-                        width: value
-                            .find(CFString::new("Width").to_void())
-                            .and_then(|value| unsafe { CFNumber::from_void(*value).to_f64() })
-                            .unwrap(),
-                        height: value
-                            .find(CFString::new("Height").to_void())
-                            .and_then(|value| unsafe { CFNumber::from_void(*value).to_f64() })
-                            .unwrap(),
-                    },
-                    position: Point {
-                        x: value
-                            .find(CFString::new("X").to_void())
-                            .and_then(|value| unsafe { CFNumber::from_void(*value).to_f64() })
-                            .unwrap(),
-                        y: value
-                            .find(CFString::new("Y").to_void())
-                            .and_then(|value| unsafe { CFNumber::from_void(*value).to_f64() })
-                            .unwrap(),
-                    },
-                })
-            });
-
-        let window_info = WindowInfo {
-            pid: window_pid,
-            id: window_id,
-            name: window_name,
-            frame: window_bounds,
-            is_main,
-            is_on_screen: window_is_on_screen.unwrap_or(false),
-        };
-
-        if let Some(window_pid) = window_info.pid {
-            if let Some(level) = window_level {
-                if window_pid != pid && level == 0 {
-                    windows.push(window_info);
+            if let DictEntryValue::_Bool(is_on_screen) = is_on_screen {
+                if !is_on_screen {
+                    continue;
                 }
+            } else {
+                continue;
+            }
+
+            if let DictEntryValue::_Rect(window_bounds) = get_from_dict(dic_ref, "kCGWindowBounds")
+            {
+                win_pos = window_bounds;
+            }
+
+            if let DictEntryValue::_String(window_title) =
+                get_from_dict(dic_ref, "kCGWindowOwnerName")
+            {
+                win_title = window_title;
+            }
+
+            if let DictEntryValue::_Number(window_id) = get_from_dict(dic_ref, "kCGWindowNumber") {
+                let is_main = is_main_window(win_pid, window_id as u32);
+
+                let window_info = WindowInfo {
+                    pid: Some(win_pid),
+                    id: Some(window_id),
+                    name: Some(win_title),
+                    frame: Some(win_pos),
+                    is_main,
+                };
+
+                windows.push(window_info);
             }
         }
     }
 
+    unsafe { CFRelease(window_list_info as CFTypeRef) }
+
     windows
 }
 
-pub fn is_main_window(window_pid: i32, window_id: u32) -> bool {
+pub fn is_main_window(window_pid: i64, window_id: u32) -> bool {
     let mut is_main = false;
     let mut value: CFTypeRef = ptr::null();
 

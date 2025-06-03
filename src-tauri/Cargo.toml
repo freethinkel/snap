@@ -1,6 +1,6 @@
 [package]
 name = "Snap"
-version = "1.4.2"
+version = "1.4.3"
 description = "Macos window manager app"
 authors = ["freethinkel"]
 edition = "2021"
@@ -42,7 +42,7 @@ objc2-app-kit = { version = "0.2.2", features = [
   "libc"
 ] }
 objc2 = "0.5.2"
-objc2-foundation = "0.2.2"
+objc2-foundation = {version = "0.2.2", features = ["NSProcessInfo"] }
 tauri-plugin-autostart = "2"
 
 [features]

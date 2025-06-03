@@ -202,27 +202,26 @@ sample({
     ...data,
     windows: data.windows.filter((window) => {
       return (
-        window.is_main &&
-        window.is_on_screen &&
-        (screen?.frame.includesPoint(window.frame.position) ||
-          screen?.frame.includesPoint(
-            new Position(
-              window.frame.position.x + window.frame.size.width,
-              window.frame.position.y + window.frame.size.height,
-            ),
-          ) ||
-          screen?.frame.includesPoint(
-            new Position(
-              window.frame.position.x + window.frame.size.width,
-              window.frame.position.y,
-            ),
-          ) ||
-          screen?.frame.includesPoint(
-            new Position(
-              window.frame.position.x,
-              window.frame.position.y + window.frame.size.height,
-            ),
-          ))
+        (window.is_main &&
+          screen?.frame.includesPoint(window.frame.position)) ||
+        screen?.frame.includesPoint(
+          new Position(
+            window.frame.position.x + window.frame.size.width,
+            window.frame.position.y + window.frame.size.height,
+          ),
+        ) ||
+        screen?.frame.includesPoint(
+          new Position(
+            window.frame.position.x + window.frame.size.width,
+            window.frame.position.y,
+          ),
+        ) ||
+        screen?.frame.includesPoint(
+          new Position(
+            window.frame.position.x,
+            window.frame.position.y + window.frame.size.height,
+          ),
+        )
       );
     }),
     screen: screen!,

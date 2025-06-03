@@ -1,16 +1,19 @@
+use std::{thread, time::Duration};
+
 use accessibility_sys::{
     kAXTrustedCheckOptionPrompt, AXIsProcessTrusted, AXIsProcessTrustedWithOptions,
 };
 use cocoa::{
     appkit::{CGPoint, NSRunningApplication},
-    base::nil,
-    foundation::NSBundle,
+    base::id,
 };
 use core_foundation::{
     base::TCFType, boolean::CFBoolean, dictionary::CFDictionary, string::CFString,
 };
 
 use core_graphics::geometry::CGSize;
+use objc2::{msg_send, runtime::AnyClass};
+use objc2_foundation::NSProcessInfo;
 use tauri::command;
 
 use crate::{
@@ -25,7 +28,7 @@ pub fn accessibility_element_under_cursor() -> Result<WindowInfo, ()> {
     let win = get_active_window();
     let result = match win {
         Ok(win) => Ok(WindowInfo {
-            pid: win.process_id as i32,
+            pid: win.process_id,
             window_id: win.window_id as u32,
             frame: win.frame,
         }),
@@ -37,14 +40,10 @@ pub fn accessibility_element_under_cursor() -> Result<WindowInfo, ()> {
 
 #[command]
 pub fn accessibility_element_set_frame(window_info: WindowInfo) {
-    let selected_app_bundle_id = unsafe {
-        NSRunningApplication::runningApplicationWithProcessIdentifier(nil, window_info.pid)
-            .bundleIdentifier()
-    };
-    let current_app_bundle_id =
-        unsafe { NSRunningApplication::currentApplication(nil).bundleIdentifier() };
+    let process_info = NSProcessInfo::processInfo();
+    let pid: i64 = unsafe { process_info.processIdentifier() as i64 };
 
-    if selected_app_bundle_id == current_app_bundle_id {
+    if window_info.pid == pid {
         return;
     }
 
@@ -52,18 +51,19 @@ pub fn accessibility_element_set_frame(window_info: WindowInfo) {
 
     match window {
         Ok(window) => {
-            set_size(
-                window,
-                CGSize {
-                    width: window_info.frame.size.width,
-                    height: window_info.frame.size.height,
-                },
-            );
             set_position(
                 window,
                 CGPoint {
                     x: window_info.frame.position.x,
                     y: window_info.frame.position.y,
+                },
+            );
+            thread::sleep(Duration::from_millis(10));
+            set_size(
+                window,
+                CGSize {
+                    width: window_info.frame.size.width,
+                    height: window_info.frame.size.height,
                 },
             );
         }

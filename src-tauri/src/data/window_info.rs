@@ -6,5 +6,5 @@ use serde::{Deserialize, Serialize};
 pub struct WindowInfo {
     pub frame: Frame,
     pub window_id: CGWindowID,
-    pub pid: i32,
+    pub pid: i64,
 }

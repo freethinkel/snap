@@ -16,7 +16,6 @@ export class CGWindow {
   id!: number;
   name!: string;
   pid!: number;
-  is_on_screen!: boolean;
   is_main!: boolean;
 
   static async getAllWindows(): Promise<CGWindow[]> {
