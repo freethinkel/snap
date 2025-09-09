@@ -3,6 +3,7 @@ import * as globalShortcut from "@tauri-apps/plugin-global-shortcut";
 import { createSharedStore } from "@/helpers";
 import { Frame } from "@/models/geometry/frame";
 import { MappingAction, keysToShortcut } from "@/models/mapping";
+import { type AnimationOptions } from "@/models/animation";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { createEffect, createEvent, createStore, sample } from "effector";
 import { MAPPING_ACTIONS } from "./mapping-actions";
@@ -10,6 +11,10 @@ import * as autostartPlugin from "@tauri-apps/plugin-autostart";
 
 const $windowGap = createSharedStore<number>("window_gap", 10);
 const $snowfallEnabled = createSharedStore<boolean>("snowfall_enabled", false);
+const $animationsEnabled = createSharedStore<boolean>(
+  "animations_enabled",
+  true,
+);
 const $mappings = createSharedStore("mappings", MAPPING_ACTIONS, {
   restoreMap: (data) =>
     (data as Array<object>).map(
@@ -40,6 +45,7 @@ const setWindowManagerMode = createEvent<"snapping" | "fancy_zones">();
 const setShowFancyZonesPlaceholder = createEvent<boolean>();
 const setAutostartEnabled = createEvent<boolean>();
 const setSnowfallEnabled = createEvent<boolean>();
+const setAnimationsEnabled = createEvent<boolean>();
 
 if (getCurrentWindow().label === "main") {
   let prevShortcut: string[] | null = null;
@@ -77,6 +83,11 @@ if (getCurrentWindow().label === "main") {
 sample({
   clock: setWindowGap,
   target: $windowGap,
+});
+
+sample({
+  clock: setAnimationsEnabled,
+  target: $animationsEnabled,
 });
 
 sample({
@@ -134,6 +145,18 @@ autostartPlugin.isEnabled().then((isEnabled) => {
   });
 });
 
+const getAnimationOptions = (): AnimationOptions | null => {
+  return null; // Fix the animation and return in the next versions
+
+  const enabled = $animationsEnabled.getState();
+  if (!enabled) return null;
+
+  return {
+    duration_ms: 200,
+    fps: 120,
+  };
+};
+
 export {
   $windowGap,
   $mappings,
@@ -142,6 +165,7 @@ export {
   $arrangeWindowsShortcut,
   $autostartEnabled,
   $snowfallEnabled,
+  $animationsEnabled,
   setSnowfallEnabled,
   setWindowManagerMode,
   mappingActivated,
@@ -150,4 +174,6 @@ export {
   setMapping,
   setArrangeWindowShortcut,
   setAutostartEnabled,
+  setAnimationsEnabled,
+  getAnimationOptions,
 };

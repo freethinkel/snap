@@ -23,9 +23,9 @@ const changeCaffeinateFx = createEffect(async (state: boolean) => {
   };
 
   if (state) {
-    await start();
+    await start().catch(console.error);
   } else {
-    await stop();
+    await stop().catch(console.error);
   }
 });
 

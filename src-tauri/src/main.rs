@@ -18,6 +18,7 @@ use tauri_plugin_global_shortcut;
 use crate::commands::{
     accessibility_element::{
         accessibility_element_check_permission, accessibility_element_set_frame,
+        accessibility_element_set_frame_animated, accessibility_element_set_frame_instant,
         accessibility_element_under_cursor,
     },
     haptic_feedback::trigger_haptic_feedback,
@@ -83,6 +84,8 @@ fn main() {
             nscolor_get_accent,
             accessibility_element_under_cursor,
             accessibility_element_set_frame,
+            accessibility_element_set_frame_animated,
+            accessibility_element_set_frame_instant,
             accessibility_element_check_permission,
             trigger_haptic_feedback,
             nscolor_listen_accent,

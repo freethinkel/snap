@@ -7,6 +7,7 @@ import * as windowManagerStore from "../window-manager";
 import * as settingsStore from "../settings";
 import { listen } from "@tauri-apps/api/event";
 import { IGNORED_WINDOWS } from "./ignored-apps";
+import { type AnimationOptions } from "@/models/animation";
 
 const loadAllData = createEvent();
 const arrangeWindowsOnCurrentScreen = createEvent();
@@ -20,13 +21,28 @@ const loadAllDataFx = createEffect(async () => {
 });
 
 const setFrame = async (window: CGWindow, frame: Frame) => {
-  await invoke("accessibility_element_set_frame", {
-    windowInfo: {
-      window_id: window.id,
-      pid: window.pid,
-      frame: frame,
-    },
-  });
+  const animationSettings = settingsStore.getAnimationOptions();
+  const finalAnimationOptions = false;
+
+  if (finalAnimationOptions) {
+    await invoke("accessibility_element_set_frame_animated", {
+      windowInfo: {
+        window_id: window.id,
+        pid: window.pid,
+        frame: frame,
+      },
+      animationOptions: finalAnimationOptions,
+    });
+  } else {
+    // Use instant positioning when animations are disabled
+    await invoke("accessibility_element_set_frame_instant", {
+      windowInfo: {
+        window_id: window.id,
+        pid: window.pid,
+        frame: frame,
+      },
+    });
+  }
 };
 
 const generateFramesByRecursiveSplit = (windowCount: number): Frame[] => {

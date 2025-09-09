@@ -2,14 +2,8 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Capability for the main window",
-  "windows": [
-    "main",
-    "statusbar",
-    "settings"
-  ],
-  "platforms": [
-    "macOS"
-  ],
+  "windows": ["main", "statusbar", "settings"],
+  "platforms": ["macOS"],
   "permissions": [
     "core:path:default",
     "core:event:default",
@@ -54,10 +48,9 @@
     "nspopover:allow-hide-popover",
     "nspopover:allow-is-popover-shown",
     {
-      "identifier": "shell:allow-execute",
+      "identifier": "shell:allow-spawn",
       "allow": [
         {
-          "sidecar": false,
           "name": "killall",
           "cmd": "killall",
           "args": [
@@ -67,7 +60,6 @@
           ]
         },
         {
-          "sidecar": false,
           "name": "caffeinate",
           "cmd": "caffeinate",
           "args": [
@@ -78,6 +70,28 @@
         }
       ]
     },
-    "global-shortcut:default"
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "killall",
+          "cmd": "killall",
+          "args": [
+            {
+              "validator": "\\S+"
+            }
+          ]
+        },
+        {
+          "name": "caffeinate",
+          "cmd": "caffeinate",
+          "args": [
+            {
+              "validator": "\\S+"
+            }
+          ]
+        }
+      ]
+    }
   ]
 }

@@ -44,6 +44,7 @@ objc2-app-kit = { version = "0.2.2", features = [
 objc2 = "0.5.2"
 objc2-foundation = {version = "0.2.2", features = ["NSProcessInfo"] }
 tauri-plugin-autostart = "2"
+once_cell = "1.19"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

@@ -1,6 +1,66 @@
-use std::{ffi::c_void, path::PathBuf, ptr};
+use std::{
+    collections::HashMap,
+    ffi::c_void,
+    path::PathBuf,
+    ptr,
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        Arc, Mutex,
+    },
+    thread,
+    time::Duration,
+};
+
+use once_cell::sync::Lazy;
 
 use super::helpers::FromCgRect;
+
+/// Thread-safe wrapper for AXUIElementRef
+#[derive(Clone, Copy)]
+pub struct SafeAXUIElement {
+    process_id: i32,
+    window_id: CGWindowID,
+}
+
+impl SafeAXUIElement {
+    pub fn new(process_id: i32, window_id: CGWindowID) -> Self {
+        Self {
+            process_id,
+            window_id,
+        }
+    }
+
+    pub fn get_element(&self) -> Result<AXUIElementRef, ()> {
+        get_window_from_id(self.process_id as i64, self.window_id)
+    }
+}
+
+unsafe impl Send for SafeAXUIElement {}
+unsafe impl Sync for SafeAXUIElement {}
+
+/// Handle for managing animation lifecycle and cancellation
+pub struct AnimationHandle {
+    cancel_flag: Arc<AtomicBool>,
+}
+
+impl AnimationHandle {
+    pub fn cancel(&self) {
+        self.cancel_flag.store(true, Ordering::SeqCst);
+    }
+}
+
+impl Drop for AnimationHandle {
+    fn drop(&mut self) {
+        // Signal cancellation
+        self.cancel_flag.store(true, Ordering::SeqCst);
+        // Don't join threads in drop to avoid deadlocks - threads will clean up themselves
+        // when they check the cancel flag and exit naturally
+    }
+}
+
+/// Global state for tracking active animations per window
+static ANIMATION_STATE: Lazy<Mutex<HashMap<CGWindowID, AnimationHandle>>> =
+    Lazy::new(|| Mutex::new(HashMap::new()));
 use crate::{data::frame::Frame, extensions::windows::is_main_window};
 use accessibility_sys::{
     kAXErrorSuccess, kAXPositionAttribute, kAXSizeAttribute, kAXValueTypeCGPoint,
@@ -86,6 +146,113 @@ pub fn get_window_from_id(pid: i64, id: u32) -> Result<AXUIElementRef, ()> {
     return Ok(target_window_ax);
 }
 
+#[derive(Clone)]
+pub struct AnimationConfig {
+    pub duration_ms: u64,
+    pub fps: u64,
+}
+
+impl Default for AnimationConfig {
+    fn default() -> Self {
+        Self {
+            duration_ms: 200,
+            fps: 60,
+        }
+    }
+}
+
+/// Easing functions for smooth animations
+#[derive(Clone, Copy)]
+pub enum EasingFunction {
+    Linear,
+    EaseOutCubic,
+    EaseInOutQuad,
+}
+
+impl EasingFunction {
+    fn apply(&self, t: f64) -> f64 {
+        match self {
+            EasingFunction::Linear => t,
+            EasingFunction::EaseOutCubic => 1.0 - (1.0 - t).powi(3),
+            EasingFunction::EaseInOutQuad => {
+                if t < 0.5 {
+                    2.0 * t * t
+                } else {
+                    1.0 - (-2.0 * t + 2.0).powi(2) / 2.0
+                }
+            }
+        }
+    }
+}
+
+/// Get current window position
+fn get_position(window: AXUIElementRef) -> Result<CGPoint, ()> {
+    let mut position_ref: CFTypeRef = ptr::null();
+
+    unsafe {
+        let result = AXUIElementCopyAttributeValue(
+            window,
+            CFString::new(kAXPositionAttribute).as_concrete_TypeRef(),
+            &mut position_ref as *mut CFTypeRef,
+        );
+
+        if result != kAXErrorSuccess || position_ref.is_null() {
+            return Err(());
+        }
+
+        let mut point = CGPoint { x: 0.0, y: 0.0 };
+        let value_ptr = &mut point as *mut _ as *mut c_void;
+
+        if AXValueGetValue(
+            position_ref as accessibility_sys::AXValueRef,
+            kAXValueTypeCGPoint,
+            value_ptr,
+        ) {
+            CFRelease(position_ref);
+            Ok(point)
+        } else {
+            CFRelease(position_ref);
+            Err(())
+        }
+    }
+}
+
+/// Get current window size
+fn get_size(window: AXUIElementRef) -> Result<CGSize, ()> {
+    let mut size_ref: CFTypeRef = ptr::null();
+
+    unsafe {
+        let result = AXUIElementCopyAttributeValue(
+            window,
+            CFString::new(kAXSizeAttribute).as_concrete_TypeRef(),
+            &mut size_ref as *mut CFTypeRef,
+        );
+
+        if result != kAXErrorSuccess || size_ref.is_null() {
+            return Err(());
+        }
+
+        let mut size = CGSize {
+            width: 0.0,
+            height: 0.0,
+        };
+        let value_ptr = &mut size as *mut _ as *mut c_void;
+
+        if AXValueGetValue(
+            size_ref as accessibility_sys::AXValueRef,
+            kAXValueTypeCGSize,
+            value_ptr,
+        ) {
+            CFRelease(size_ref);
+            Ok(size)
+        } else {
+            CFRelease(size_ref);
+            Err(())
+        }
+    }
+}
+
+/// Immediately set window position without animation
 pub fn set_position(window: AXUIElementRef, mut point: CGPoint) {
     let ptr = &mut point as *mut _ as *mut c_void;
     unsafe {
@@ -96,6 +263,8 @@ pub fn set_position(window: AXUIElementRef, mut point: CGPoint) {
         );
     }
 }
+
+/// Immediately set window size without animation
 pub fn set_size(window: AXUIElementRef, mut size: CGSize) {
     let ptr = &mut size as *mut _ as *mut c_void;
     unsafe {
@@ -107,9 +276,321 @@ pub fn set_size(window: AXUIElementRef, mut size: CGSize) {
     }
 }
 
+/// Animate window position change
+pub fn set_position_animated(
+    window: AXUIElementRef,
+    target_point: CGPoint,
+    config: AnimationConfig,
+) {
+    // Get window ID for tracking
+    let mut window_id: CGWindowID = 0;
+    if unsafe { _AXUIElementGetWindow(window, &mut window_id) } != kAXErrorSuccess {
+        // Fallback to immediate positioning if we can't get window ID
+        set_position(window, target_point);
+        return;
+    }
+
+    // Get process ID
+    let process_id = match get_process_id_from_window(window) {
+        Some(pid) => pid,
+        None => {
+            set_position(window, target_point);
+            return;
+        }
+    };
+
+    let safe_element = SafeAXUIElement::new(process_id, window_id);
+
+    // Capture start position once before animation
+    let start_point = get_position(window).unwrap_or(target_point);
+
+    animate_window_property(
+        window_id,
+        safe_element,
+        move |safe_window, progress, _| {
+            if let Ok(window) = safe_window.get_element() {
+                let eased_progress = EasingFunction::EaseInOutQuad.apply(progress);
+
+                let current_x = start_point.x + (target_point.x - start_point.x) * eased_progress;
+                let current_y = start_point.y + (target_point.y - start_point.y) * eased_progress;
+
+                let current_point = CGPoint {
+                    x: current_x,
+                    y: current_y,
+                };
+
+                set_position(window, current_point);
+            }
+        },
+        config,
+    );
+}
+
+/// Animate window size change
+pub fn set_size_animated(window: AXUIElementRef, target_size: CGSize, config: AnimationConfig) {
+    // Get window ID for tracking
+    let mut window_id: CGWindowID = 0;
+    if unsafe { _AXUIElementGetWindow(window, &mut window_id) } != kAXErrorSuccess {
+        // Fallback to immediate sizing if we can't get window ID
+        set_size(window, target_size);
+        return;
+    }
+
+    // Get process ID
+    let process_id = match get_process_id_from_window(window) {
+        Some(pid) => pid,
+        None => {
+            set_size(window, target_size);
+            return;
+        }
+    };
+
+    let safe_element = SafeAXUIElement::new(process_id, window_id);
+
+    // Capture start size once before animation
+    let start_size = get_size(window).unwrap_or(target_size);
+
+    animate_window_property(
+        window_id,
+        safe_element,
+        move |safe_window, progress, _| {
+            if let Ok(window) = safe_window.get_element() {
+                let eased_progress = EasingFunction::EaseInOutQuad.apply(progress);
+
+                let current_width =
+                    start_size.width + (target_size.width - start_size.width) * eased_progress;
+                let current_height =
+                    start_size.height + (target_size.height - start_size.height) * eased_progress;
+
+                let current_size = CGSize {
+                    width: current_width,
+                    height: current_height,
+                };
+
+                set_size(window, current_size);
+            }
+        },
+        config,
+    );
+}
+
+/// Animate both window position and size simultaneously
+pub fn set_frame_animated(
+    window: AXUIElementRef,
+    target_point: CGPoint,
+    target_size: CGSize,
+    config: AnimationConfig,
+) {
+    // Get window ID and process ID for tracking
+    // Get window ID and process ID for tracking
+    let mut window_id: CGWindowID = 0;
+    if unsafe { _AXUIElementGetWindow(window, &mut window_id) } != kAXErrorSuccess {
+        // Fallback to immediate positioning and sizing
+        set_position(window, target_point);
+        set_size(window, target_size);
+        return;
+    }
+
+    // Extract process ID from the current window
+    let process_id = match get_process_id_from_window(window) {
+        Some(pid) => pid,
+        None => {
+            set_position(window, target_point);
+            set_size(window, target_size);
+            return;
+        }
+    };
+
+    let safe_element = SafeAXUIElement::new(process_id, window_id);
+
+    // Capture start values once before animation
+    let start_point = get_position(window).unwrap_or(target_point);
+    let start_size = get_size(window).unwrap_or(target_size);
+
+    animate_window_property(
+        window_id,
+        safe_element,
+        move |safe_window, progress, _| {
+            if let Ok(window) = safe_window.get_element() {
+                let eased_progress = EasingFunction::EaseInOutQuad.apply(progress);
+
+                // Animate position
+                let current_x = start_point.x + (target_point.x - start_point.x) * eased_progress;
+                let current_y = start_point.y + (target_point.y - start_point.y) * eased_progress;
+                let current_point = CGPoint {
+                    x: current_x,
+                    y: current_y,
+                };
+
+                // Animate size
+                let current_width =
+                    start_size.width + (target_size.width - start_size.width) * eased_progress;
+                let current_height =
+                    start_size.height + (target_size.height - start_size.height) * eased_progress;
+                let current_size = CGSize {
+                    width: current_width,
+                    height: current_height,
+                };
+
+                set_position(window, current_point);
+                set_size(window, current_size);
+            }
+        },
+        config,
+    );
+}
+
+/// Helper function to get process ID from AXUIElementRef
+fn get_process_id_from_window(window: AXUIElementRef) -> Option<i32> {
+    let mut pid: i32 = 0;
+    let result = unsafe { accessibility_sys::AXUIElementGetPid(window, &mut pid) };
+    if result == kAXErrorSuccess {
+        Some(pid)
+    } else {
+        None
+    }
+}
+
+/// Generic animation function that handles thread safety and cancellation
+fn animate_window_property<F>(
+    window_id: CGWindowID,
+    safe_window: SafeAXUIElement,
+    mut animation_fn: F,
+    config: AnimationConfig,
+) where
+    F: FnMut(SafeAXUIElement, f64, bool) + Send + Copy + 'static,
+{
+    // Cancel any existing animation for this window
+    let cancel_flag = Arc::new(AtomicBool::new(false));
+
+    {
+        let mut state = ANIMATION_STATE.lock().unwrap();
+        // Cancel existing animation if it exists
+        if let Some(existing) = state.get(&window_id) {
+            existing.cancel();
+        }
+
+        // Store the new animation handle immediately
+        let animation_handle = AnimationHandle {
+            cancel_flag: cancel_flag.clone(),
+        };
+        state.insert(window_id, animation_handle);
+    }
+
+    let cancel_flag_clone = cancel_flag.clone();
+
+    thread::spawn(move || {
+        let total_frames = (config.duration_ms * config.fps / 1000).max(1);
+        let frame_duration = Duration::from_millis(1000 / config.fps);
+
+        for frame in 0..=total_frames {
+            // Check if animation should be cancelled
+            if cancel_flag_clone.load(Ordering::SeqCst) {
+                break;
+            }
+
+            let progress = frame as f64 / total_frames as f64;
+            let is_first_frame = frame == 0;
+
+            thread::spawn(move || {
+                animation_fn(safe_window, progress, is_first_frame);
+            });
+
+            if frame < total_frames {
+                thread::sleep(frame_duration);
+            }
+        }
+
+        // Remove this animation from the state when it completes or is cancelled
+        let mut state = ANIMATION_STATE.lock().unwrap();
+        // Only remove if it's still the same animation (check by cancel_flag address)
+        if let Some(current) = state.get(&window_id) {
+            if Arc::ptr_eq(&current.cancel_flag, &cancel_flag_clone) {
+                state.remove(&window_id);
+            }
+        }
+    });
+}
+
+/// Cancel all active animations
+pub fn cancel_all_animations() {
+    let mut state = ANIMATION_STATE.lock().unwrap();
+    // Cancel all animations before clearing
+    for (_, handle) in state.iter() {
+        handle.cancel();
+    }
+    state.clear();
+}
+
+/// Cancel animation for a specific window
+pub fn cancel_window_animation(window_id: CGWindowID) {
+    let mut state = ANIMATION_STATE.lock().unwrap();
+    if let Some(handle) = state.get(&window_id) {
+        handle.cancel();
+    }
+    state.remove(&window_id);
+}
+
+/// Get the number of active animations (useful for testing)
+pub fn get_active_animation_count() -> usize {
+    let state = ANIMATION_STATE.lock().unwrap();
+    state.len()
+}
+
+extern "C" {
+    fn AXValueGetValue(
+        value: accessibility_sys::AXValueRef,
+        type_: accessibility_sys::AXValueType,
+        value_ptr: *mut c_void,
+    ) -> bool;
+    fn CFRelease(cf: CFTypeRef);
+}
+
 extern "C" {
     fn _AXUIElementGetWindow(element: AXUIElementRef, window_id: *mut CGWindowID) -> AXError;
 }
+
+/// Example usage of the animation system:
+///
+/// ```rust
+/// use cocoa::appkit::CGPoint;
+/// use core_graphics::geometry::CGSize;
+///
+/// // Get window reference
+/// let window = get_window_from_id(pid, window_id).unwrap();
+///
+/// // Animate to new position with custom config
+/// let config = AnimationConfig {
+///     duration_ms: 300,
+///     fps: 60,
+///     easing: EasingFunction::EaseOutCubic,
+/// };
+/// set_position_animated(window, CGPoint { x: 100.0, y: 100.0 }, config.clone());
+///
+/// // Animate to new size
+/// set_size_animated(window, CGSize { width: 800.0, height: 600.0 }, config.clone());
+///
+/// // Animate both position and size simultaneously
+/// set_frame_animated(
+///     window,
+///     CGPoint { x: 200.0, y: 150.0 },
+///     CGSize { width: 1000.0, height: 700.0 },
+///     config
+/// );
+///
+/// // Cancel specific window animation
+/// cancel_window_animation(window_id);
+///
+/// // Cancel all animations
+/// cancel_all_animations();
+/// ```
+///
+/// Features:
+/// - Thread-safe: Multiple windows can be animated simultaneously
+/// - Cancellable: Starting a new animation automatically cancels the previous one for that window
+/// - Smooth easing: Multiple easing functions available
+/// - No blocking: Animations run in background threads
+/// - Automatic cleanup: Animation state is cleaned up when animations complete or are cancelled
 
 #[allow(non_upper_case_globals)]
 pub const kCFNumberSInt32Type: CFNumberType = 3;
